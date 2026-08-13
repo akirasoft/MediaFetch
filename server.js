@@ -789,6 +789,14 @@ app.post('/api/cancel/:id', (req, res) => {
   }
 });
 
+// Klasörü Explorer'da aç
+app.post('/api/open-folder', (req, res) => {
+  const { dir } = req.body;
+  const target = (dir && fs.existsSync(dir)) ? dir : DEFAULT_DOWNLOAD_DIR;
+  require('child_process').exec(`explorer "${target}"`);
+  res.json({ ok: true });
+});
+
 // yt-dlp güncelle
 app.post('/api/update-ytdlp', (req, res) => {
   res.json({ ok: true, message: 'Güncelleme başlatıldı...' });
@@ -802,8 +810,16 @@ app.post('/api/update-ytdlp', (req, res) => {
 });
 
 const PORT = 3434;
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n⚠️  Port ${PORT} zaten kullanımda!`);
+    console.error(`   Başka bir MediaFetch penceresi açık olabilir.`);
+    console.error(`   Lütfen o pencereyi kapatıp tekrar deneyin.\n`);
+    process.exit(1);
+  } else { throw err; }
+});
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`\n=== Müzik & Video İndirme ===`);
+  console.log(`\n=== MediaFetch ===`);
   console.log(`Tarayıcıda açın: http://localhost:${PORT}`);
   console.log('Kapatmak için Ctrl+C\n');
 

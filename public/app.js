@@ -159,6 +159,7 @@ document.querySelectorAll('.fmt-tab').forEach(tab => {
     document.querySelectorAll('.fmt-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     currentType = tab.dataset.type;
+    localStorage.setItem('mf_lastType', currentType);
     renderFormats();
   });
 });
@@ -209,9 +210,10 @@ async function analyzeUrl() {
     }
     thumbnail.onerror = () => { thumbnail.style.display = 'none'; };
 
-    // reset to audio tab by default
-    document.querySelectorAll('.fmt-tab').forEach(t => t.classList.toggle('active', t.dataset.type === 'audio'));
-    currentType = 'audio';
+    // son kullanılan tab tipini geri yükle
+    const lastType = localStorage.getItem('mf_lastType') || 'audio';
+    document.querySelectorAll('.fmt-tab').forEach(t => t.classList.toggle('active', t.dataset.type === lastType));
+    currentType = lastType;
     renderFormats();
 
     infoCard.hidden = false;
@@ -260,16 +262,19 @@ function renderFormats() {
       document.querySelectorAll('.format-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       selectedFormat = f.id;
+      localStorage.setItem('mf_lastFormat', f.id);
       btnDownload.disabled = false;
     });
     formatGrid.appendChild(btn);
   });
 
-  // Auto-select first
-  const first = formatGrid.querySelector('.format-btn');
-  if (first) {
-    first.classList.add('selected');
-    selectedFormat = first.dataset.id;
+  // Son kullanılan formatı geri yükle, yoksa ilki
+  const lastFormat = localStorage.getItem('mf_lastFormat');
+  const toSelect = (lastFormat && formatGrid.querySelector(`[data-id="${lastFormat}"]`))
+    || formatGrid.querySelector('.format-btn');
+  if (toSelect) {
+    toSelect.classList.add('selected');
+    selectedFormat = toSelect.dataset.id;
     btnDownload.disabled = false;
   }
 }
@@ -305,6 +310,7 @@ btnDownload.addEventListener('click', async () => {
 
 /* ── Download items ─────────────────────────────────── */
 const dlItems = new Map();
+const dlDirs  = new Map();
 
 function addDownloadItem(id, label = null) {
   downloadsSection.hidden = false;
@@ -332,6 +338,7 @@ function addDownloadItem(id, label = null) {
   `;
   downloadList.prepend(item);
   dlItems.set(id, item);
+  dlDirs.set(id, outputDir.value);
 
   item.querySelector('.dl-cancel-btn').addEventListener('click', () => {
     fetch(`/api/cancel/${id}`, { method: 'POST' });
@@ -435,7 +442,28 @@ function handleWSMessage(msg) {
       const msgEl = item.querySelector('.dl-message');
       msgEl.textContent = '✓ Dosya kaydedildi';
       msgEl.className = 'dl-message ok-msg';
-      item.querySelector('.dl-cancel-btn').remove();
+      // "Klasörde Göster" butonu
+      const openBtn = document.createElement('button');
+      openBtn.className = 'dl-open-btn';
+      openBtn.textContent = '📂 Klasörde Göster';
+      openBtn.addEventListener('click', () => {
+        fetch('/api/open-folder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dir: dlDirs.get(downloadId) || outputDir.value || '' })
+        }).catch(() => {});
+      });
+      msgEl.insertAdjacentElement('afterend', openBtn);
+      // İptal → Kapat butonuna çevir
+      const cancelBtn = item.querySelector('.dl-cancel-btn');
+      if (cancelBtn) {
+        const dismissBtn = document.createElement('button');
+        dismissBtn.className = 'dl-cancel-btn';
+        dismissBtn.title = 'Kapat';
+        dismissBtn.textContent = '✕';
+        dismissBtn.addEventListener('click', () => { item.remove(); dlItems.delete(downloadId); dlDirs.delete(downloadId); });
+        cancelBtn.replaceWith(dismissBtn);
+      }
       const fnText = item.querySelector('.dl-filename')?.textContent || '';
       showNotification('İndirme tamamlandı!', fnText);
       showToast('İndirme tamamlandı!', 'success');
@@ -450,7 +478,15 @@ function handleWSMessage(msg) {
       const msgEl = item.querySelector('.dl-message');
       msgEl.textContent = msg.message || 'Hata oluştu';
       msgEl.className = 'dl-message error-msg';
-      item.querySelector('.dl-cancel-btn')?.remove();
+      const errBtn = item.querySelector('.dl-cancel-btn');
+      if (errBtn) {
+        const dismissBtn = document.createElement('button');
+        dismissBtn.className = 'dl-cancel-btn';
+        dismissBtn.title = 'Kapat';
+        dismissBtn.textContent = '✕';
+        dismissBtn.addEventListener('click', () => { item.remove(); dlItems.delete(downloadId); dlDirs.delete(downloadId); });
+        errBtn.replaceWith(dismissBtn);
+      }
       showToast('İndirme başarısız', 'error');
       break;
     }
@@ -459,7 +495,15 @@ function handleWSMessage(msg) {
       const pill = item.querySelector('.dl-status-pill');
       pill.className = 'dl-status-pill cancelled';
       pill.textContent = 'İptal';
-      item.querySelector('.dl-cancel-btn')?.remove();
+      const cxlBtn = item.querySelector('.dl-cancel-btn');
+      if (cxlBtn) {
+        const dismissBtn = document.createElement('button');
+        dismissBtn.className = 'dl-cancel-btn';
+        dismissBtn.title = 'Kapat';
+        dismissBtn.textContent = '✕';
+        dismissBtn.addEventListener('click', () => { item.remove(); dlItems.delete(downloadId); dlDirs.delete(downloadId); });
+        cxlBtn.replaceWith(dismissBtn);
+      }
       break;
     }
   }

@@ -626,6 +626,19 @@ body {
 }
 .dl-cancel-btn:hover { color: var(--red); background: rgba(244,63,94,.1); }
 
+.dl-open-btn {
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.dl-open-btn:hover { border-color: var(--teal); color: var(--teal); }
+
 /* ── MODAL ────────────────────────────────────────── */
 .modal-backdrop {
   position: fixed;

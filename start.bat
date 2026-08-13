@@ -1,10 +1,10 @@
 @echo off
 chcp 65001 >nul
-title Müzik & Video İndirme
+title MediaFetch
 
 echo.
 echo  =======================================
-echo    Müzik ^& Video İndirme Programı
+echo           MediaFetch v1.0.0
 echo  =======================================
 echo.
 
