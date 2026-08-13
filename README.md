@@ -1,4 +1,4 @@
-# ↓ indirici
+# ↓ MediaFetch
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
@@ -11,6 +11,8 @@
 [![Author](https://img.shields.io/badge/author-OuzK-orange)](https://github.com/akirasoft)
 
 ---
+
+> ⚠️ **Legal Notice:** This tool is intended for content you have the right to download — public domain, Creative Commons-licensed material, or content where the copyright holder grants permission. Downloading copyrighted material without authorization may violate the platform's Terms of Service and applicable copyright law. **You are solely responsible for how you use this software.** The author provides this tool as-is and accepts no liability for any misuse.
 
 ## Features
 
@@ -44,8 +46,8 @@
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/akirasoft/indirici.git
-cd indirici
+git clone https://github.com/akirasoft/mediafetch.git
+cd mediafetch
 
 # 2. Double-click start.bat  (or run manually)
 node setup.js   # downloads yt-dlp into bin/
@@ -79,7 +81,7 @@ The `extension/` folder contains a Manifest V3 extension for Brave and Chrome.
 ## Project Structure
 
 ```
-indirici/
+mediafetch/
 ├── server.js          # Express + WebSocket server, all download logic
 ├── setup.js           # One-time yt-dlp downloader
 ├── start.bat          # Windows launcher (setup + npm install + server)

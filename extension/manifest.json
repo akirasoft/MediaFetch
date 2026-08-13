@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "indirici",
+  "name": "MediaFetch",
   "version": "1.0.0",
-  "description": "YouTube, TikTok, Instagram ve 1000+ siteden müzik & video indir",
+  "description": "Download music & video from YouTube, TikTok, Instagram and 1000+ sites",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "indirici — müzik & video",
+    "default_title": "MediaFetch — music & video",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

@@ -1,5 +1,5 @@
 {
-  "name": "indirici",
+  "name": "mediafetch",
   "version": "1.0.0",
   "description": "Local yt-dlp GUI — download music & video from YouTube, TikTok, Instagram, SoundCloud and 1000+ sites. Includes a Brave/Chrome extension.",
   "main": "server.js",
@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/akirasoft/indirici.git"
+    "url": "https://github.com/akirasoft/mediafetch.git"
   },
   "scripts": {
     "start": "node server.js",

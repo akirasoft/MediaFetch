@@ -1,4 +1,4 @@
-# ↓ indirici
+# ↓ MediaFetch
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
@@ -11,6 +11,8 @@
 [![Yapımcı](https://img.shields.io/badge/yap%C4%B1mc%C4%B1-OuzK-orange)](https://github.com/akirasoft)
 
 ---
+
+> ⚠️ **Yasal Uyarı:** Bu araç yalnızca indirme hakkına sahip olduğunuz içerikler için tasarlanmıştır — kamu malı, Creative Commons lisanslı içerikler veya telif hakkı sahibinin izin verdiği materyaller. Telif hakkıyla korunan içeriklerin yetkisiz indirilmesi, platformun Kullanım Koşulları'nı ve geçerli telif hakkı mevzuatını ihlal edebilir. **Bu yazılımı nasıl kullandığınızdan yalnızca siz sorumlusunuz.** Yapımcı bu aracı olduğu gibi sunar; kötüye kullanımdan doğacak hiçbir sorumluluk kabul edilmez.
 
 ## Özellikler
 
@@ -44,8 +46,8 @@
 
 ```bash
 # 1. Repoyu klonla
-git clone https://github.com/akirasoft/indirici.git
-cd indirici
+git clone https://github.com/akirasoft/mediafetch.git
+cd mediafetch
 
 # 2. start.bat'a çift tıkla  (veya manuel çalıştır)
 node setup.js   # yt-dlp'yi bin/ klasörüne indirir
@@ -79,7 +81,7 @@ Tarayıcı otomatik olarak **http://localhost:3434** adresinde açılır.
 ## Proje Yapısı
 
 ```
-indirici/
+mediafetch/
 ├── server.js          # Express + WebSocket sunucusu, tüm indirme mantığı
 ├── setup.js           # Tek seferlik yt-dlp indirici
 ├── start.bat          # Windows başlatıcı (kurulum + npm install + sunucu)
