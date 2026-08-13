@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "indirici",
+  "version": "1.0.0",
+  "description": "YouTube, TikTok, Instagram ve 1000+ siteden müzik & video indir",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "indirici — müzik & video",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": ["activeTab", "tabs", "storage"],
+  "host_permissions": [
+    "http://localhost:3434/*",
+    "http://127.0.0.1:3434/*"
+  ]
+}

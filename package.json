@@ -1,0 +1,36 @@
+{
+  "name": "indirici",
+  "version": "1.0.0",
+  "description": "Local yt-dlp GUI — download music & video from YouTube, TikTok, Instagram, SoundCloud and 1000+ sites. Includes a Brave/Chrome extension.",
+  "main": "server.js",
+  "author": "OuzK <https://github.com/akirasoft>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akirasoft/indirici.git"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "setup": "node setup.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "yt-dlp",
+    "youtube-downloader",
+    "video-downloader",
+    "music-downloader",
+    "tiktok-downloader",
+    "instagram-downloader",
+    "youtube",
+    "tiktok",
+    "soundcloud",
+    "ffmpeg",
+    "browser-extension"
+  ],
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.16.0"
+  }
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>İndirici — Müzik & Video</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── TOP NAV ── -->
+  <header class="topnav">
+    <div class="topnav-brand">
+      <div class="brand-mark">↓</div>
+      <span class="brand-name">indirici</span>
+    </div>
+
+    <nav class="topnav-nav">
+      <a class="tnav-link active" href="#">Keşfet</a>
+      <a class="tnav-link" href="#downloadsSection">İndirmeler</a>
+    </nav>
+
+    <div class="topnav-actions">
+      <span class="version-badge" id="versionBadge">yt-dlp</span>
+      <button class="btn-outline" id="btnUpdateYtdlp">↑ Güncelle</button>
+    </div>
+  </header>
+
+  <!-- ── BODY ── -->
+  <div class="body-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sb-section">
+        <button class="sb-item sb-active">
+          <span class="sb-icon discover-icon"></span>
+          Keşfet
+        </button>
+      </div>
+
+      <div class="sb-section">
+        <p class="sb-label">Platformlar</p>
+        <button class="sb-item platform-item" data-name="YouTube" data-url="youtube.com,youtu.be">
+          <span class="sb-dot" style="--c:#ff2d2d"></span> YouTube
+        </button>
+        <button class="sb-item platform-item" data-name="SoundCloud" data-url="soundcloud.com">
+          <span class="sb-dot" style="--c:#ff5500"></span> SoundCloud
+        </button>
+        <button class="sb-item platform-item" data-name="Twitter/X" data-url="twitter.com,x.com">
+          <span class="sb-dot" style="--c:#1d9bf0"></span> Twitter / X
+        </button>
+        <button class="sb-item platform-item" data-name="Instagram" data-url="instagram.com">
+          <span class="sb-dot" style="--c:#e1306c"></span> Instagram
+        </button>
+        <button class="sb-item platform-item" data-name="TikTok" data-url="tiktok.com,vm.tiktok.com">
+          <span class="sb-dot" style="--c:#69c9d0"></span> TikTok
+        </button>
+        <button class="sb-item platform-item" data-name="Vimeo" data-url="vimeo.com">
+          <span class="sb-dot" style="--c:#1ab7ea"></span> Vimeo
+        </button>
+        <button class="sb-item platform-item" data-name="Twitch" data-url="twitch.tv">
+          <span class="sb-dot" style="--c:#9147ff"></span> Twitch
+        </button>
+      </div>
+
+      <div class="sb-section">
+        <p class="sb-label">Format</p>
+        <button class="sb-item sb-format-hint" data-type="audio">
+          <span class="sb-dot" style="--c:#3558E8"></span> MP3 — Ses
+        </button>
+        <button class="sb-item sb-format-hint" data-type="video">
+          <span class="sb-dot" style="--c:#7c3aed"></span> MP4 — Video
+        </button>
+      </div>
+
+      <div class="sb-section sb-history">
+        <div class="sb-label-row">
+          <p class="sb-label">Son İndirmeler</p>
+          <button class="sb-clear-btn" id="btnClearHistory" title="Geçmişi temizle">✕</button>
+        </div>
+        <div id="historyList" class="hist-list">
+          <div class="hist-empty">Henüz indirme yok</div>
+        </div>
+      </div>
+
+      <div class="sb-section sb-bottom">
+        <p class="sb-label">Kayıt Yeri</p>
+        <div class="sb-dir-wrap">
+          <input type="text" id="outputDir" class="sb-dir-input" placeholder="~/Downloads">
+          <button class="sb-dir-default" id="btnDefaultDir" title="Varsayılan">↺</button>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero-meta">
+          <span class="hero-meta-dot"></span>
+          1,000+ site desteklenir
+          <span class="hero-meta-sep">·</span>
+          ffmpeg birleştirme aktif
+        </div>
+
+        <h1 class="hero-heading">Müzik &amp; Video<br>İndirin.</h1>
+        <p class="hero-sub">YouTube, SoundCloud, Instagram ve daha fazlasından<br>yüksek kalite, tek tıkla.</p>
+
+        <div class="url-stage" id="urlStage">
+          <input
+            type="text"
+            id="urlInput"
+            class="url-input"
+            placeholder="URL yapıştırın — YouTube, SoundCloud, Twitter/X, Instagram…"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button class="url-paste-btn" id="btnPaste" title="Panodan yapıştır">📋</button>
+          <button class="url-analyze-btn" id="btnAnalyze">
+            <span class="btn-text">Analiz Et</span>
+            <span class="btn-spinner" hidden>↻</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Info Panel (hidden until URL analyzed) -->
+      <section class="info-panel" id="infoCard" hidden>
+        <div class="playlist-banner" id="playlistBanner" hidden>
+          <span class="playlist-icon">📃</span>
+          <span id="playlistText">Oynatma listesi</span>
+        </div>
+        <div class="info-video-row">
+          <img class="info-thumb" id="thumbnail" src="" alt="">
+          <div class="info-meta">
+            <h2 class="info-title" id="videoTitle"></h2>
+            <p class="info-channel" id="videoUploader"></p>
+            <p class="info-dur" id="videoDuration"></p>
+          </div>
+        </div>
+
+        <div class="format-section">
+          <div class="format-tabs">
+            <button class="fmt-tab active" data-type="audio">🎵 Müzik (MP3)</button>
+            <button class="fmt-tab" data-type="video">🎬 Video (MP4)</button>
+          </div>
+          <div class="format-grid" id="formatGrid"></div>
+
+          <label class="editor-toggle" id="editorOption" hidden>
+            <input type="checkbox" id="chkSeparateAudio">
+            <span class="editor-toggle-body">
+              <strong>Editörler için</strong> — Ses ve videoyu ayrı dosya olarak indir
+              <em id="editorAudioLabel">Video sessiz .mp4 + ses ayrı .wav</em>
+            </span>
+          </label>
+        </div>
+
+        <button class="btn-download" id="btnDownload" disabled>⬇ İndir</button>
+      </section>
+
+      <!-- Downloads -->
+      <section class="dl-section" id="downloadsSection" hidden>
+        <div class="dl-section-head">
+          <h2 class="dl-section-title">İndirmeler</h2>
+        </div>
+        <div class="dl-list" id="downloadList"></div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- Log Modal -->
+<div class="modal-backdrop" id="logModal" hidden>
+  <div class="modal">
+    <div class="modal-head">
+      <span>Sistem Logu</span>
+      <button id="btnCloseModal">✕</button>
+    </div>
+    <pre class="log-area" id="logArea"></pre>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

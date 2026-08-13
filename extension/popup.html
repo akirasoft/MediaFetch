@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <header class="hdr">
+    <span class="logo">↓ <strong>indirici</strong></span>
+    <div class="hdr-right">
+      <div class="lang-sw">
+        <button class="lang-btn" data-lang="tr">TR</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="es">ES</button>
+      </div>
+      <span class="srv-dot" id="srvDot" title=""></span>
+    </div>
+  </header>
+
+  <div class="url-bar" id="urlBar"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-type="audio" data-i18n="tabAudio"></button>
+    <button class="tab"        data-type="video" data-i18n="tabVideo"></button>
+  </div>
+
+  <div class="qualities" id="qualities"></div>
+
+  <button class="btn-dl" id="btnDl" disabled data-i18n="dlBtn"></button>
+
+  <div class="progress-wrap" id="progressWrap" hidden>
+    <div class="dl-filename" id="dlFilename"></div>
+    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-row">
+      <span id="progPct">0%</span>
+      <span id="progSpeed"></span>
+      <span id="progEta"></span>
+    </div>
+    <div class="prog-msg" id="progMsg"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

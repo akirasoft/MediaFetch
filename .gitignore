@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# yt-dlp binary (downloaded automatically by setup.js)
+bin/yt-dlp.exe
+
+# Downloaded media files
+downloads/*
+!downloads/.gitkeep
+
+# Runtime data
+history.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / tooling
+.claude/
+.vscode/
+.idea/
