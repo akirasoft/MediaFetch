@@ -8,7 +8,7 @@ const YT_DLP_PATH = path.join(BIN_DIR, 'yt-dlp.exe');
 
 function download(url, dest, redirectCount = 0) {
   if (redirectCount > 10) {
-    console.error('Çok fazla yönlendirme.');
+    console.error('Too many redirects.');
     process.exit(1);
   }
 
@@ -35,7 +35,7 @@ function download(url, dest, redirectCount = 0) {
         downloaded += chunk.length;
         if (total > 0) {
           const pct = Math.round((downloaded / total) * 100);
-          process.stdout.write(`\r  İndiriliyor: ${pct}% (${(downloaded / 1024 / 1024).toFixed(1)} MB)`);
+          process.stdout.write(`\r  Downloading: ${pct}% (${(downloaded / 1024 / 1024).toFixed(1)} MB)`);
         }
       });
 
@@ -55,26 +55,26 @@ function download(url, dest, redirectCount = 0) {
 }
 
 async function main() {
-  console.log('=== Müzik & Video İndirme - Kurulum ===\n');
+  console.log('=== MediaFetch — Setup ===\n');
 
   if (!fs.existsSync(BIN_DIR)) fs.mkdirSync(BIN_DIR, { recursive: true });
 
   if (fs.existsSync(YT_DLP_PATH)) {
-    console.log('yt-dlp zaten kurulu. Güncelleme kontrolü atlanıyor.');
+    console.log('yt-dlp already installed. Skipping download.');
   } else {
-    console.log('yt-dlp indiriliyor...');
+    console.log('Downloading yt-dlp...');
     try {
       await download(YT_DLP_URL, YT_DLP_PATH);
-      console.log('yt-dlp başarıyla kuruldu.');
+      console.log('yt-dlp installed successfully.');
     } catch (err) {
-      console.error('yt-dlp indirilemedi:', err.message);
+      console.error('Failed to download yt-dlp:', err.message);
       process.exit(1);
     }
   }
 
-  console.log('\nKurulum tamamlandı!');
-  console.log('Programı başlatmak için: node server.js');
-  console.log('veya start.bat dosyasını çalıştırın.');
+  console.log('\nSetup complete!');
+  console.log('Run: node server.js');
+  console.log('Or double-click start.bat');
 }
 
 main();

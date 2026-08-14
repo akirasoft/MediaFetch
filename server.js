@@ -48,7 +48,7 @@ function findFfmpeg() {
 }
 
 const FFMPEG_PATH = findFfmpeg();
-console.log(FFMPEG_PATH ? `ffmpeg bulundu: ${FFMPEG_PATH}` : 'ffmpeg bulunamadı — ses/video birleştirme devre dışı');
+console.log(FFMPEG_PATH ? `ffmpeg found: ${FFMPEG_PATH}` : 'ffmpeg not found — audio/video merge disabled');
 
 // ── İndirme geçmişi ──────────────────────────────────────────
 const HISTORY_FILE = path.join(__dirname, 'history.json');
@@ -83,7 +83,7 @@ function autoUpdateYtDlp() {
   if (!fs.existsSync(YT_DLP)) return;
   // Mevcut versiyonu önce önbelleğe al
   fetchYtDlpVersion(() => {
-    console.log('yt-dlp güncelleme kontrol ediliyor...');
+    console.log('Checking for yt-dlp update...');
     const proc = spawn(YT_DLP, ['-U']);
     proc.stdout.on('data', d => console.log('[yt-dlp]', d.toString().trim()));
     proc.on('close', () => {
@@ -119,7 +119,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
   const ffmpegBin = path.join(FFMPEG_PATH, 'ffmpeg.exe');
   const ffprobeBin = path.join(FFMPEG_PATH, 'ffprobe.exe');
 
-  broadcast({ type: 'status', downloadId, message: 'TikTok sayfası analiz ediliyor...' });
+  broadcast({ type: 'status', downloadId, message: 'Analyzing TikTok...' });
 
   // ── 1. Embed sayfasından play URL ve başlık al ─────────────
   const embedPageData = await new Promise((resolve) => {
@@ -140,7 +140,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
   });
 
   if (!embedPageData) {
-    broadcast({ type: 'error', downloadId, message: 'Embed sayfası yüklenemedi.' });
+    broadcast({ type: 'error', downloadId, message: 'Embed page failed to load.' });
     return;
   }
 
@@ -153,7 +153,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
   const videoSrcMatch = html.match(/<video[^>]+src="(https:\/\/[^"]+tiktokcdn[^"]+)"/);
   if (!videoSrcMatch) {
     // Fallback: embed URL ile yt-dlp
-    broadcast({ type: 'status', downloadId, message: 'Embed URL ile indiriliyor...' });
+    broadcast({ type: 'status', downloadId, message: 'Downloading via embed URL...' });
     const title = await getTikTokTitle(url, platformArgs);
     const safeName = (title || `tiktok_${downloadId}`).replace(/[\\/:*?"<>|]/g, '_');
     const outTpl = path.join(downloadDir, `${safeName}.mp4`);
@@ -176,7 +176,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
   const finalOut = path.join(downloadDir, `${safeName}.mp4`);
 
   broadcast({ type: 'filename', downloadId, filename: `${safeName}.mp4` });
-  broadcast({ type: 'status', downloadId, message: 'Video indiriliyor...' });
+  broadcast({ type: 'status', downloadId, message: 'Downloading video...' });
 
   // ── 2. Play URL'den direkt indir (ses+video birlikte) ─────
   let downloaded = 0;
@@ -223,7 +223,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
 
   if (!videoDownloaded || !fs.existsSync(tmpRaw)) {
     try { fs.unlinkSync(tmpRaw); } catch {}
-    broadcast({ type: 'error', downloadId, message: 'Video indirilemedi.' });
+    broadcast({ type: 'error', downloadId, message: 'Video download failed.' });
     downloads.delete(downloadId);
     return;
   }
@@ -231,7 +231,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
   broadcast({ type: 'progress', downloadId, percent: 77 });
 
   // ── 3. Video boyutunu al (delogo koordinatları için) ───────
-  broadcast({ type: 'status', downloadId, message: 'Filigran kaldırılıyor...' });
+  broadcast({ type: 'status', downloadId, message: 'Removing watermark...' });
 
   const probeOut = await new Promise((resolve) => {
     const { execFile } = require('child_process');
@@ -287,7 +287,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
     broadcast({ type: 'complete', downloadId });
     appendHistory({ url, title: safeName, filename: `${safeName}.mp4` });
   } else {
-    broadcast({ type: 'error', downloadId, message: 'Filigran kaldırma başarısız.' });
+    broadcast({ type: 'error', downloadId, message: 'Watermark removal failed.' });
   }
 }
 
@@ -381,10 +381,10 @@ app.get('/api/ffmpeg-status', (req, res) => {
 // Video bilgisi al
 app.post('/api/info', async (req, res) => {
   const { url } = req.body;
-  if (!url) return res.status(400).json({ error: 'URL gerekli' });
+  if (!url) return res.status(400).json({ error: 'URL required' });
 
   if (!fs.existsSync(YT_DLP)) {
-    return res.status(500).json({ error: 'yt-dlp kurulu değil. Lütfen önce kurulum yapın (node setup.js).' });
+    return res.status(500).json({ error: 'yt-dlp not installed. Run node setup.js first.' });
   }
 
   const args = ['--dump-json', '--no-playlist', ...getPlatformArgs(url), url];
@@ -397,7 +397,7 @@ app.post('/api/info', async (req, res) => {
 
   proc.on('close', (code) => {
     if (code !== 0) {
-      return res.status(400).json({ error: 'Video bilgisi alınamadı. URL\'yi kontrol edin.', detail: errOutput });
+      return res.status(400).json({ error: 'Could not fetch video info. Check the URL.', detail: errOutput });
     }
     try {
       const info = JSON.parse(output);
@@ -409,7 +409,7 @@ app.post('/api/info', async (req, res) => {
         formats: extractFormats(info)
       });
     } catch (e) {
-      res.status(500).json({ error: 'Video bilgisi işlenemedi.' });
+      res.status(500).json({ error: 'Failed to parse video info.' });
     }
   });
 });
@@ -494,13 +494,13 @@ function startProc(downloadId, args, historyMeta = null) {
         broadcast({ type: 'complete', downloadId });
         if (historyMeta) appendHistory({ url: historyMeta.url, title: historyMeta.title || capturedFilename, filename: capturedFilename });
       } else {
-        broadcast({ type: 'error', downloadId, message: 'İndirme başarısız.' });
+        broadcast({ type: 'error', downloadId, message: 'Download failed.' });
       }
       resolve(code);
     });
     proc.on('error', (err) => {
       downloads.delete(downloadId);
-      broadcast({ type: 'error', downloadId, message: 'Hata: ' + err.message });
+      broadcast({ type: 'error', downloadId, message: 'Error: ' + err.message });
       resolve(-1);
     });
   });
@@ -509,10 +509,10 @@ function startProc(downloadId, args, historyMeta = null) {
 // İndirme başlat
 app.post('/api/download', (req, res) => {
   const { url, formatId, outputDir, separateAudio } = req.body;
-  if (!url || !formatId) return res.status(400).json({ error: 'URL ve format gerekli' });
+  if (!url || !formatId) return res.status(400).json({ error: 'URL and format required' });
 
   if (!fs.existsSync(YT_DLP)) {
-    return res.status(500).json({ error: 'yt-dlp kurulu değil.' });
+    return res.status(500).json({ error: 'yt-dlp not installed.' });
   }
 
   const downloadDir = outputDir || DEFAULT_DOWNLOAD_DIR;
@@ -686,7 +686,7 @@ function parseProgress(line, downloadId) {
   // [download] Downloading item 3 of 12
   const plMatch = line.match(/\[download\] Downloading item (\d+) of (\d+)/);
   if (plMatch) {
-    broadcast({ type: 'status', downloadId, message: `Oynatma listesi: ${plMatch[1]} / ${plMatch[2]}` });
+    broadcast({ type: 'status', downloadId, message: `Playlist: ${plMatch[1]} / ${plMatch[2]}` });
     return;
   }
 
@@ -713,12 +713,12 @@ function parseProgress(line, downloadId) {
 
   // Merging formats
   if (line.includes('[Merger]') || line.includes('Merging')) {
-    broadcast({ type: 'status', downloadId, message: 'Birleştiriliyor...' });
+    broadcast({ type: 'status', downloadId, message: 'Merging...' });
     return;
   }
 
   if (line.includes('[ExtractAudio]') || line.includes('Extracting audio')) {
-    broadcast({ type: 'status', downloadId, message: 'Ses çıkarılıyor...' });
+    broadcast({ type: 'status', downloadId, message: 'Extracting audio...' });
     return;
   }
 }
@@ -752,7 +752,7 @@ app.post('/api/playlist-info', (req, res) => {
 
   const timer = setTimeout(() => {
     try { proc.kill(); } catch {}
-    if (!sent) { sent = true; res.status(408).json({ error: 'Zaman aşımı' }); }
+    if (!sent) { sent = true; res.status(408).json({ error: 'Timeout' }); }
   }, 25000);
 
   proc.on('close', () => {
@@ -766,13 +766,13 @@ app.post('/api/playlist-info', (req, res) => {
         count: info.playlist_count || (Array.isArray(info.entries) ? info.entries.length : 0)
       });
     } catch {
-      res.status(400).json({ error: 'Playlist bilgisi alınamadı.' });
+      res.status(400).json({ error: 'Failed to fetch playlist info.' });
     }
   });
 
   proc.on('error', () => {
     clearTimeout(timer);
-    if (!sent) { sent = true; res.status(500).json({ error: 'Hata' }); }
+    if (!sent) { sent = true; res.status(500).json({ error: 'Error' }); }
   });
 });
 
@@ -785,7 +785,7 @@ app.post('/api/cancel/:id', (req, res) => {
     broadcast({ type: 'cancelled', downloadId: req.params.id });
     res.json({ ok: true });
   } else {
-    res.status(404).json({ error: 'İndirme bulunamadı' });
+    res.status(404).json({ error: 'Download not found' });
   }
 });
 
@@ -804,7 +804,7 @@ app.post('/api/update-ytdlp', (req, res) => {
   proc.stdout.on('data', (d) => broadcast({ type: 'log', message: d.toString() }));
   proc.stderr.on('data', (d) => broadcast({ type: 'log', message: d.toString() }));
   proc.on('close', () => {
-    broadcast({ type: 'log', message: 'Güncelleme tamamlandı.' });
+    broadcast({ type: 'log', message: 'Update complete.' });
     fetchYtDlpVersion(ver => { if (ver) broadcast({ type: 'ytdlp-version', version: ver }); });
   });
 });

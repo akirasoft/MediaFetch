@@ -19,13 +19,18 @@
     </div>
 
     <nav class="topnav-nav">
-      <a class="tnav-link active" href="#">Keşfet</a>
-      <a class="tnav-link" href="#downloadsSection">İndirmeler</a>
+      <a class="tnav-link active" href="#" data-i18n="nav_discover">Keşfet</a>
+      <a class="tnav-link" href="#downloadsSection" data-i18n="nav_downloads">İndirmeler</a>
     </nav>
 
     <div class="topnav-actions">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="tr">TR</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="es">ES</button>
+      </div>
       <span class="version-badge" id="versionBadge">yt-dlp</span>
-      <button class="btn-outline" id="btnUpdateYtdlp">↑ Güncelle</button>
+      <button class="btn-outline" id="btnUpdateYtdlp" data-i18n="btn_update">↑ Güncelle</button>
     </div>
   </header>
 
@@ -36,14 +41,11 @@
     <aside class="sidebar">
 
       <div class="sb-section">
-        <button class="sb-item sb-active">
-          <span class="sb-icon discover-icon"></span>
-          Keşfet
-        </button>
+        <button class="sb-item sb-active" data-i18n="nav_discover">Keşfet</button>
       </div>
 
       <div class="sb-section">
-        <p class="sb-label">Platformlar</p>
+        <p class="sb-label" data-i18n="sb_platforms">Platformlar</p>
         <button class="sb-item platform-item" data-name="YouTube" data-url="youtube.com,youtu.be">
           <span class="sb-dot" style="--c:#ff2d2d"></span> YouTube
         </button>
@@ -68,30 +70,30 @@
       </div>
 
       <div class="sb-section">
-        <p class="sb-label">Format</p>
+        <p class="sb-label" data-i18n="sb_format">Format</p>
         <button class="sb-item sb-format-hint" data-type="audio">
-          <span class="sb-dot" style="--c:#3558E8"></span> MP3 — Ses
+          <span class="sb-dot" style="--c:#3558E8"></span> <span data-i18n="fmt_audio_hint">MP3 — Ses</span>
         </button>
         <button class="sb-item sb-format-hint" data-type="video">
-          <span class="sb-dot" style="--c:#7c3aed"></span> MP4 — Video
+          <span class="sb-dot" style="--c:#7c3aed"></span> <span data-i18n="fmt_video_hint">MP4 — Video</span>
         </button>
       </div>
 
       <div class="sb-section sb-history">
         <div class="sb-label-row">
-          <p class="sb-label">Son İndirmeler</p>
-          <button class="sb-clear-btn" id="btnClearHistory" title="Geçmişi temizle">✕</button>
+          <p class="sb-label" data-i18n="sb_history">Son İndirmeler</p>
+          <button class="sb-clear-btn" id="btnClearHistory" title="✕"></button>
         </div>
         <div id="historyList" class="hist-list">
-          <div class="hist-empty">Henüz indirme yok</div>
+          <div class="hist-empty" data-i18n="hist_empty">Henüz indirme yok</div>
         </div>
       </div>
 
       <div class="sb-section sb-bottom">
-        <p class="sb-label">Kayıt Yeri</p>
+        <p class="sb-label" data-i18n="sb_saveto">Kayıt Yeri</p>
         <div class="sb-dir-wrap">
           <input type="text" id="outputDir" class="sb-dir-input" placeholder="~/Downloads">
-          <button class="sb-dir-default" id="btnDefaultDir" title="Varsayılan">↺</button>
+          <button class="sb-dir-default" id="btnDefaultDir" title="↺">↺</button>
         </div>
       </div>
 
@@ -104,26 +106,30 @@
       <section class="hero">
         <div class="hero-meta">
           <span class="hero-meta-dot"></span>
-          1,000+ site desteklenir
+          <span data-i18n="hero_meta_sites">1.000+ site desteklenir</span>
           <span class="hero-meta-sep">·</span>
-          ffmpeg birleştirme aktif
+          <span id="heroFfmpegStatus" data-i18n="hero_meta_ffmpeg">ffmpeg birleştirme aktif</span>
         </div>
 
-        <h1 class="hero-heading">Müzik &amp; Video<br>İndirin.</h1>
-        <p class="hero-sub">YouTube, SoundCloud, Instagram ve daha fazlasından<br>yüksek kalite, tek tıkla.</p>
+        <h1 class="hero-heading"><span data-i18n="hero_h1">Müzik &amp; Video</span><br><span data-i18n="hero_h2">İndirin.</span></h1>
+        <p class="hero-sub">
+          <span data-i18n="hero_sub_1">YouTube, SoundCloud, Instagram ve daha fazlasından</span><br>
+          <span data-i18n="hero_sub_2">yüksek kalite, tek tıkla.</span>
+        </p>
 
         <div class="url-stage" id="urlStage">
           <input
             type="text"
             id="urlInput"
             class="url-input"
+            data-i18n-placeholder="url_placeholder"
             placeholder="URL yapıştırın — YouTube, SoundCloud, Twitter/X, Instagram…"
             autocomplete="off"
             spellcheck="false"
           >
-          <button class="url-paste-btn" id="btnPaste" title="Panodan yapıştır">📋</button>
+          <button class="url-paste-btn" id="btnPaste" data-i18n-title="btn_paste_title" title="Panodan yapıştır">📋</button>
           <button class="url-analyze-btn" id="btnAnalyze">
-            <span class="btn-text">Analiz Et</span>
+            <span class="btn-text" data-i18n="btn_analyze">Analiz Et</span>
             <span class="btn-spinner" hidden>↻</span>
           </button>
         </div>
@@ -133,7 +139,7 @@
       <section class="info-panel" id="infoCard" hidden>
         <div class="playlist-banner" id="playlistBanner" hidden>
           <span class="playlist-icon">📃</span>
-          <span id="playlistText">Oynatma listesi</span>
+          <span id="playlistText"></span>
         </div>
         <div class="info-video-row">
           <img class="info-thumb" id="thumbnail" src="" alt="">
@@ -146,27 +152,27 @@
 
         <div class="format-section">
           <div class="format-tabs">
-            <button class="fmt-tab active" data-type="audio">🎵 Müzik (MP3)</button>
-            <button class="fmt-tab" data-type="video">🎬 Video (MP4)</button>
+            <button class="fmt-tab active" data-type="audio" data-i18n="tab_audio">🎵 Müzik (MP3)</button>
+            <button class="fmt-tab" data-type="video" data-i18n="tab_video">🎬 Video (MP4)</button>
           </div>
           <div class="format-grid" id="formatGrid"></div>
 
           <label class="editor-toggle" id="editorOption" hidden>
             <input type="checkbox" id="chkSeparateAudio">
             <span class="editor-toggle-body">
-              <strong>Editörler için</strong> — Ses ve videoyu ayrı dosya olarak indir
-              <em id="editorAudioLabel">Video sessiz .mp4 + ses ayrı .wav</em>
+              <strong data-i18n="editor_strong">Editörler için</strong><span data-i18n="editor_desc"> — Ses ve videoyu ayrı dosya olarak indir</span>
+              <em id="editorAudioLabel">Video + Ses (WAV)</em>
             </span>
           </label>
         </div>
 
-        <button class="btn-download" id="btnDownload" disabled>⬇ İndir</button>
+        <button class="btn-download" id="btnDownload" disabled data-i18n="btn_download">⬇ İndir</button>
       </section>
 
       <!-- Downloads -->
       <section class="dl-section" id="downloadsSection" hidden>
         <div class="dl-section-head">
-          <h2 class="dl-section-title">İndirmeler</h2>
+          <h2 class="dl-section-title" data-i18n="dl_section_title">İndirmeler</h2>
         </div>
         <div class="dl-list" id="downloadList"></div>
       </section>
@@ -179,7 +185,7 @@
 <div class="modal-backdrop" id="logModal" hidden>
   <div class="modal">
     <div class="modal-head">
-      <span>Sistem Logu</span>
+      <span data-i18n="modal_log_title">Sistem Logu</span>
       <button id="btnCloseModal">✕</button>
     </div>
     <pre class="log-area" id="logArea"></pre>
