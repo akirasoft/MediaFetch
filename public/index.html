@@ -30,7 +30,9 @@
         <button class="lang-btn" data-lang="es">ES</button>
       </div>
       <span class="version-badge" id="versionBadge">yt-dlp</span>
-      <button class="btn-outline" id="btnUpdateYtdlp" data-i18n="btn_update">↑ Güncelle</button>
+      <button class="btn-settings" id="btnSettings" data-i18n-title="btn_settings_title" title="Settings">
+        ⚙<span class="update-dot" id="updateDot" hidden></span>
+      </button>
     </div>
   </header>
 
@@ -181,14 +183,57 @@
   </div>
 </div>
 
-<!-- Log Modal -->
-<div class="modal-backdrop" id="logModal" hidden>
-  <div class="modal">
+<!-- Settings Modal -->
+<div class="modal-backdrop" id="settingsModal" hidden>
+  <div class="modal settings-modal">
     <div class="modal-head">
-      <span data-i18n="modal_log_title">Sistem Logu</span>
-      <button id="btnCloseModal">✕</button>
+      <span data-i18n="settings_title">Settings</span>
+      <button id="btnCloseSettings">✕</button>
     </div>
-    <pre class="log-area" id="logArea"></pre>
+    <div class="settings-body">
+
+      <div class="settings-section">
+        <p class="settings-section-label" data-i18n="settings_updates">yt-dlp Updates</p>
+
+        <div class="version-info-row">
+          <div class="version-col">
+            <span class="ver-label" data-i18n="version_current">Current</span>
+            <span class="ver-val" id="settingCurrentVer">—</span>
+          </div>
+          <div class="version-col" id="latestVerCol" hidden>
+            <span class="ver-label" data-i18n="version_latest">Latest</span>
+            <span class="ver-val ver-new" id="settingLatestVer">—</span>
+          </div>
+          <span class="ver-badge-ok" id="verUpToDate" hidden data-i18n="version_up_to_date">✓ Up to date</span>
+        </div>
+
+        <div class="update-actions">
+          <button class="btn-check-update" id="btnCheckUpdate">
+            <span class="btn-text" data-i18n="btn_check_updates">Check for Updates</span>
+            <span class="btn-spinner" hidden>↻</span>
+          </button>
+          <button class="btn-install-update" id="btnInstallUpdate" hidden data-i18n="btn_install_update">⬇ Install Update</button>
+        </div>
+
+        <label class="setting-row">
+          <span class="setting-label" data-i18n="setting_auto_update">Automatically check for updates on startup</span>
+          <span class="toggle">
+            <input type="checkbox" id="settingAutoUpdate">
+            <span class="toggle-track"></span>
+          </span>
+        </label>
+
+        <p class="settings-privacy-note" data-i18n="settings_privacy_note">Updates connect directly to github.com/yt-dlp — no intermediary server. Binary is verified with SHA256 before replacing.</p>
+      </div>
+
+      <div class="update-log-wrap" id="updateLogWrap" hidden>
+        <div class="update-progress-track" id="updateProgressTrack" hidden>
+          <div class="update-progress-fill" id="updateProgressFill" style="width:0%"></div>
+        </div>
+        <pre class="log-area" id="updateLogArea"></pre>
+      </div>
+
+    </div>
   </div>
 </div>
 

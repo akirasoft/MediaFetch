@@ -3,7 +3,7 @@
 /* ── i18n ───────────────────────────────────────────── */
 const LANGS = {
   tr: {
-    nav_discover: 'Keşfet', nav_downloads: 'İndirmeler', btn_update: '↑ Güncelle',
+    nav_discover: 'Keşfet', nav_downloads: 'İndirmeler',
     sb_platforms: 'Platformlar', sb_format: 'Format', sb_history: 'Son İndirmeler',
     sb_saveto: 'Kayıt Yeri', hist_empty: 'Henüz indirme yok',
     fmt_audio_hint: 'MP3 — Ses', fmt_video_hint: 'MP4 — Video',
@@ -23,16 +23,30 @@ const LANGS = {
     dl_error: 'Hata', dl_cancelled: 'İptal',
     dl_saved: '✓ Dosya kaydedildi', dl_open_folder: '📂 Klasörde Göster',
     dl_cancel_title: 'İptal', dl_dismiss_title: 'Kapat',
-    modal_log_title: 'Sistem Logu', update_starting: 'Güncelleme başlatılıyor…',
     toast_enter_url: 'URL giriniz', toast_invalid_url: 'Geçersiz URL',
     toast_select_format: 'Format seçiniz', toast_dl_started: 'İndirme başlatıldı!',
     toast_dl_failed: 'İndirme başarısız', toast_dl_error: 'İndirme başlatılamadı',
     toast_server_error: 'Sunucu hatası', toast_no_server: 'Sunucuya bağlanılamadı',
     notif_dl_complete: 'İndirme tamamlandı!',
     playlist_detected: 'Oynatma listesi algılandı…', playlist_label: 'Oynatma Listesi',
+    // Settings
+    btn_settings_title: 'Ayarlar',
+    settings_title: 'Ayarlar',
+    settings_updates: 'yt-dlp Güncellemeleri',
+    version_current: 'Mevcut', version_latest: 'Son sürüm',
+    version_up_to_date: '✓ Güncel',
+    btn_check_updates: 'Güncellemeleri Kontrol Et',
+    btn_install_update: '⬇ Güncellemeyi Yükle',
+    setting_auto_update: 'Başlangıçta güncellemeleri otomatik kontrol et',
+    settings_privacy_note: 'Güncellemeler doğrudan github.com/yt-dlp adresine bağlanır — aracı sunucu yok. Mevcut binary\'yi değiştirmeden önce SHA256 ile doğrulanır.',
+    update_checking: 'Kontrol ediliyor…',
+    update_available_toast: 'yt-dlp güncellemesi mevcut → Ayarlar',
+    update_already_latest: 'Zaten güncel.',
+    update_complete_toast: 'yt-dlp güncellendi!',
+    update_error_toast: 'Güncelleme başarısız',
   },
   en: {
-    nav_discover: 'Discover', nav_downloads: 'Downloads', btn_update: '↑ Update',
+    nav_discover: 'Discover', nav_downloads: 'Downloads',
     sb_platforms: 'Platforms', sb_format: 'Format', sb_history: 'Recent Downloads',
     sb_saveto: 'Save to', hist_empty: 'No downloads yet',
     fmt_audio_hint: 'MP3 — Audio', fmt_video_hint: 'MP4 — Video',
@@ -52,16 +66,30 @@ const LANGS = {
     dl_error: 'Error', dl_cancelled: 'Cancelled',
     dl_saved: '✓ File saved', dl_open_folder: '📂 Show in folder',
     dl_cancel_title: 'Cancel', dl_dismiss_title: 'Close',
-    modal_log_title: 'System Log', update_starting: 'Starting update…',
     toast_enter_url: 'Enter a URL', toast_invalid_url: 'Invalid URL',
     toast_select_format: 'Select a format', toast_dl_started: 'Download started!',
     toast_dl_failed: 'Download failed', toast_dl_error: 'Could not start download',
     toast_server_error: 'Server error', toast_no_server: 'Cannot connect to server',
     notif_dl_complete: 'Download complete!',
     playlist_detected: 'Playlist detected…', playlist_label: 'Playlist',
+    // Settings
+    btn_settings_title: 'Settings',
+    settings_title: 'Settings',
+    settings_updates: 'yt-dlp Updates',
+    version_current: 'Current', version_latest: 'Latest',
+    version_up_to_date: '✓ Up to date',
+    btn_check_updates: 'Check for Updates',
+    btn_install_update: '⬇ Install Update',
+    setting_auto_update: 'Automatically check for updates on startup',
+    settings_privacy_note: 'Updates connect directly to github.com/yt-dlp — no intermediary server. Binary is verified with SHA256 before replacing.',
+    update_checking: 'Checking…',
+    update_available_toast: 'yt-dlp update available → Settings',
+    update_already_latest: 'Already up to date.',
+    update_complete_toast: 'yt-dlp updated!',
+    update_error_toast: 'Update failed',
   },
   es: {
-    nav_discover: 'Explorar', nav_downloads: 'Descargas', btn_update: '↑ Actualizar',
+    nav_discover: 'Explorar', nav_downloads: 'Descargas',
     sb_platforms: 'Plataformas', sb_format: 'Formato', sb_history: 'Descargas recientes',
     sb_saveto: 'Guardar en', hist_empty: 'Sin descargas aún',
     fmt_audio_hint: 'MP3 — Audio', fmt_video_hint: 'MP4 — Vídeo',
@@ -81,13 +109,27 @@ const LANGS = {
     dl_error: 'Error', dl_cancelled: 'Cancelado',
     dl_saved: '✓ Archivo guardado', dl_open_folder: '📂 Mostrar en carpeta',
     dl_cancel_title: 'Cancelar', dl_dismiss_title: 'Cerrar',
-    modal_log_title: 'Log del sistema', update_starting: 'Iniciando actualización…',
     toast_enter_url: 'Introduce una URL', toast_invalid_url: 'URL no válida',
     toast_select_format: 'Selecciona un formato', toast_dl_started: '¡Descarga iniciada!',
     toast_dl_failed: 'Descarga fallida', toast_dl_error: 'No se pudo iniciar la descarga',
     toast_server_error: 'Error del servidor', toast_no_server: 'No se puede conectar al servidor',
     notif_dl_complete: '¡Descarga completada!',
     playlist_detected: 'Lista detectada…', playlist_label: 'Lista de reproducción',
+    // Settings
+    btn_settings_title: 'Configuración',
+    settings_title: 'Configuración',
+    settings_updates: 'Actualizaciones de yt-dlp',
+    version_current: 'Actual', version_latest: 'Última',
+    version_up_to_date: '✓ Actualizado',
+    btn_check_updates: 'Buscar actualizaciones',
+    btn_install_update: '⬇ Instalar actualización',
+    setting_auto_update: 'Comprobar actualizaciones automáticamente al iniciar',
+    settings_privacy_note: 'Las actualizaciones se conectan directamente a github.com/yt-dlp — sin servidor intermediario. El binario se verifica con SHA256 antes de reemplazarlo.',
+    update_checking: 'Comprobando…',
+    update_available_toast: 'Actualización de yt-dlp disponible → Configuración',
+    update_already_latest: 'Ya está actualizado.',
+    update_complete_toast: '¡yt-dlp actualizado!',
+    update_error_toast: 'Error al actualizar',
   }
 };
 
@@ -165,12 +207,25 @@ const outputDir        = document.getElementById('outputDir');
 const btnDefaultDir    = document.getElementById('btnDefaultDir');
 const downloadList     = document.getElementById('downloadList');
 const downloadsSection = document.getElementById('downloadsSection');
-const btnUpdateYtdlp   = document.getElementById('btnUpdateYtdlp');
-const logModal         = document.getElementById('logModal');
-const logArea          = document.getElementById('logArea');
-const btnCloseModal    = document.getElementById('btnCloseModal');
 const playlistBanner   = document.getElementById('playlistBanner');
 const playlistText     = document.getElementById('playlistText');
+
+// Settings modal
+const btnSettings        = document.getElementById('btnSettings');
+const settingsModal      = document.getElementById('settingsModal');
+const btnCloseSettings   = document.getElementById('btnCloseSettings');
+const settingAutoUpdate  = document.getElementById('settingAutoUpdate');
+const btnCheckUpdate     = document.getElementById('btnCheckUpdate');
+const btnInstallUpdate   = document.getElementById('btnInstallUpdate');
+const settingCurrentVer  = document.getElementById('settingCurrentVer');
+const settingLatestVer   = document.getElementById('settingLatestVer');
+const latestVerCol       = document.getElementById('latestVerCol');
+const verUpToDate        = document.getElementById('verUpToDate');
+const updateLogWrap      = document.getElementById('updateLogWrap');
+const updateLogArea      = document.getElementById('updateLogArea');
+const updateProgressFill = document.getElementById('updateProgressFill');
+const updateProgressTrack= document.getElementById('updateProgressTrack');
+const updateDot          = document.getElementById('updateDot');
 
 /* ── ffmpeg & yt-dlp version ────────────────────────── */
 fetch('/api/ffmpeg-status')
@@ -184,6 +239,7 @@ fetch('/api/ytdlp-version')
     if (d.version) {
       const badge = document.getElementById('versionBadge');
       if (badge) badge.textContent = 'yt-dlp ' + d.version;
+      if (settingCurrentVer) settingCurrentVer.textContent = d.version;
     }
   })
   .catch(() => {});
@@ -204,6 +260,88 @@ fetch('/api/default-dir')
 btnDefaultDir.addEventListener('click', () =>
   fetch('/api/default-dir').then(r => r.json()).then(d => { outputDir.value = d.dir; })
 );
+
+/* ── Settings modal ─────────────────────────────────── */
+function openSettings() {
+  settingsModal.hidden = false;
+  // Refresh current version display
+  fetch('/api/ytdlp-version')
+    .then(r => r.json())
+    .then(d => { if (d.version && settingCurrentVer) settingCurrentVer.textContent = d.version; })
+    .catch(() => {});
+}
+
+function closeSettings() {
+  settingsModal.hidden = true;
+}
+
+btnSettings.addEventListener('click', openSettings);
+btnCloseSettings.addEventListener('click', closeSettings);
+settingsModal.addEventListener('click', e => { if (e.target === settingsModal) closeSettings(); });
+
+// Load settings from server
+fetch('/api/settings')
+  .then(r => r.json())
+  .then(s => { settingAutoUpdate.checked = !!s.autoUpdate; })
+  .catch(() => {});
+
+settingAutoUpdate.addEventListener('change', () => {
+  fetch('/api/settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ autoUpdate: settingAutoUpdate.checked })
+  }).catch(() => {});
+});
+
+/* ── Check for updates (manual) ─────────────────────── */
+btnCheckUpdate.addEventListener('click', async () => {
+  const btnText = btnCheckUpdate.querySelector('.btn-text');
+  const btnSpin = btnCheckUpdate.querySelector('.btn-spinner');
+  btnCheckUpdate.disabled = true;
+  if (btnText) btnText.textContent = t('update_checking');
+  if (btnSpin) btnSpin.hidden = false;
+
+  latestVerCol.hidden = true;
+  verUpToDate.hidden = true;
+  btnInstallUpdate.hidden = true;
+
+  try {
+    const res = await fetch('/api/check-updates');
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Check failed');
+
+    if (settingCurrentVer) settingCurrentVer.textContent = data.current || '—';
+
+    if (data.updateAvailable) {
+      settingLatestVer.textContent = data.latest;
+      latestVerCol.hidden = false;
+      btnInstallUpdate.hidden = false;
+      updateDot.hidden = false;
+    } else {
+      verUpToDate.hidden = false;
+      updateDot.hidden = true;
+    }
+  } catch (err) {
+    showToast(err.message || t('toast_server_error'), 'error');
+  } finally {
+    btnCheckUpdate.disabled = false;
+    if (btnText) btnText.textContent = t('btn_check_updates');
+    if (btnSpin) btnSpin.hidden = true;
+  }
+});
+
+/* ── Install update ─────────────────────────────────── */
+btnInstallUpdate.addEventListener('click', () => {
+  updateLogWrap.hidden = false;
+  updateProgressTrack.hidden = false;
+  updateProgressFill.style.width = '0%';
+  updateLogArea.textContent = '';
+  btnInstallUpdate.hidden = true;
+  btnInstallUpdate.disabled = true;
+
+  fetch('/api/update-ytdlp', { method: 'POST' }).catch(() => {});
+});
 
 /* ── Platform detection ─────────────────────────────── */
 const PLATFORMS = [
@@ -249,8 +387,8 @@ document.querySelectorAll('.sb-format-hint').forEach(item => {
   item.addEventListener('click', () => {
     const type = item.dataset.type;
     if (!infoCard.hidden) {
-      document.querySelectorAll('.fmt-tab').forEach(t => {
-        t.classList.toggle('active', t.dataset.type === type);
+      document.querySelectorAll('.fmt-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.type === type);
       });
       currentType = type;
       renderFormats();
@@ -305,8 +443,8 @@ async function analyzeUrl() {
   const btnText = btnAnalyze.querySelector('.btn-text');
   const btnSpin = btnAnalyze.querySelector('.btn-spinner');
   btnAnalyze.disabled = true;
-  btnText.hidden = true;
-  btnSpin.hidden = false;
+  if (btnText) btnText.hidden = true;
+  if (btnSpin) btnSpin.hidden = false;
 
   highlightPlatformSidebar(url);
 
@@ -355,7 +493,7 @@ async function analyzeUrl() {
         body: JSON.stringify({ url })
       }).then(r => r.ok ? r.json() : null).then(pl => {
         if (pl && playlistText) {
-          playlistText.textContent = `${pl.title || t('playlist_label')} — ${pl.count || '?'} `;
+          playlistText.textContent = `${pl.title || t('playlist_label')} — ${pl.count || '?'}`;
         }
       }).catch(() => {});
     } else if (playlistBanner) {
@@ -365,8 +503,8 @@ async function analyzeUrl() {
     showToast(t('toast_no_server'), 'error');
   } finally {
     btnAnalyze.disabled = false;
-    btnText.hidden = false;
-    btnSpin.hidden = true;
+    if (btnText) btnText.hidden = false;
+    if (btnSpin) btnSpin.hidden = true;
   }
 }
 
@@ -437,7 +575,7 @@ btnDownload.addEventListener('click', async () => {
 const dlItems = new Map();
 const dlDirs  = new Map();
 
-function addDownloadItem(id, label = null) {
+function addDownloadItem(id, label) {
   downloadsSection.hidden = false;
   const item = document.createElement('div');
   item.className = 'dl-item';
@@ -538,12 +676,48 @@ function isPlaylistUrl(url) {
 function handleWSMessage(msg) {
   const { type, downloadId } = msg;
 
-  if (type === 'log') { logArea.textContent += msg.message; return; }
+  // yt-dlp version broadcast
   if (type === 'ytdlp-version') {
     const badge = document.getElementById('versionBadge');
     if (badge) badge.textContent = 'yt-dlp ' + msg.version;
+    if (settingCurrentVer) settingCurrentVer.textContent = msg.version;
     return;
   }
+
+  // Update system messages
+  if (type === 'update-available') {
+    updateDot.hidden = false;
+    if (settingLatestVer) settingLatestVer.textContent = msg.latest;
+    if (latestVerCol) latestVerCol.hidden = false;
+    if (btnInstallUpdate) btnInstallUpdate.hidden = false;
+    showToast(t('update_available_toast'), 'success');
+    return;
+  }
+  if (type === 'update-log') {
+    if (updateLogArea) {
+      updateLogArea.textContent += msg.message;
+      updateLogArea.scrollTop = updateLogArea.scrollHeight;
+    }
+    return;
+  }
+  if (type === 'update-progress') {
+    if (updateProgressFill) updateProgressFill.style.width = (msg.percent || 0) + '%';
+    return;
+  }
+  if (type === 'update-complete') {
+    updateDot.hidden = true;
+    if (latestVerCol) latestVerCol.hidden = true;
+    if (verUpToDate) verUpToDate.hidden = false;
+    if (btnInstallUpdate) { btnInstallUpdate.hidden = true; btnInstallUpdate.disabled = false; }
+    if (!msg.alreadyLatest) showToast(t('update_complete_toast'), 'success');
+    return;
+  }
+  if (type === 'update-error') {
+    if (btnInstallUpdate) btnInstallUpdate.disabled = false;
+    showToast(t('update_error_toast'), 'error');
+    return;
+  }
+
   if (!downloadId) return;
 
   const item = dlItems.get(downloadId);
@@ -628,15 +802,6 @@ function handleWSMessage(msg) {
   }
 }
 
-/* ── yt-dlp update ──────────────────────────────────── */
-btnUpdateYtdlp.addEventListener('click', () => {
-  logModal.hidden = false;
-  logArea.textContent = t('update_starting') + '\n';
-  fetch('/api/update-ytdlp', { method: 'POST' });
-});
-btnCloseModal.addEventListener('click', () => { logModal.hidden = true; });
-logModal.addEventListener('click', e => { if (e.target === logModal) logModal.hidden = true; });
-
 /* ── Helpers ────────────────────────────────────────── */
 function fmtDur(s) {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), ss = Math.floor(s % 60);
@@ -646,18 +811,18 @@ function fmtDur(s) {
 }
 
 let toastTimer;
-function showToast(msg, type = 'success') {
+function showToast(msg, type) {
   document.querySelector('.toast')?.remove();
   clearTimeout(toastTimer);
-  const t = document.createElement('div');
-  t.className = `toast ${type}`;
-  t.textContent = msg;
-  document.body.appendChild(t);
+  const el = document.createElement('div');
+  el.className = `toast ${type || 'success'}`;
+  el.textContent = msg;
+  document.body.appendChild(el);
   toastTimer = setTimeout(() => {
-    t.style.transition = 'opacity .25s';
-    t.style.opacity = '0';
-    setTimeout(() => t.remove(), 250);
-  }, 3000);
+    el.style.transition = 'opacity .25s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 250);
+  }, 3500);
 }
 
 /* ── Init ───────────────────────────────────────────── */

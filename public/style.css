@@ -793,6 +793,144 @@ body {
 }
 .playlist-icon { font-size: 15px; flex-shrink: 0; }
 
+/* ── SETTINGS BUTTON ─────────────────────────────── */
+.btn-settings {
+  position: relative;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 15px;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.btn-settings:hover { color: var(--text); border-color: var(--border2); background: var(--surface); }
+
+.update-dot {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #f59e0b;
+  border: 1.5px solid var(--nav-bg);
+}
+
+/* ── SETTINGS MODAL ──────────────────────────────── */
+.settings-modal { width: min(480px, 92vw); }
+
+.settings-body {
+  padding: 20px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+  max-height: calc(75vh - 52px);
+}
+
+.settings-section { display: flex; flex-direction: column; gap: 14px; }
+
+.settings-section-label {
+  font-size: 10.5px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--muted);
+}
+
+.version-info-row {
+  display: flex; align-items: center; gap: 20px;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.version-col { display: flex; flex-direction: column; gap: 2px; }
+
+.ver-label {
+  font-size: 10.5px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .05em;
+  color: var(--muted);
+}
+.ver-val { font-size: 13px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.ver-val.ver-new { color: #f59e0b; }
+.ver-badge-ok { font-size: 12px; font-weight: 600; color: var(--teal); margin-left: auto; }
+
+.update-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.btn-check-update {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border2); border-radius: 6px;
+  background: transparent; color: var(--text2);
+  font-family: inherit; font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: border-color .15s, color .15s, background .15s;
+}
+.btn-check-update:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.btn-check-update:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-install-update {
+  padding: 8px 14px;
+  border: none; border-radius: 6px;
+  background: #f59e0b; color: #fff;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, box-shadow .15s;
+}
+.btn-install-update:hover { background: #d97706; box-shadow: 0 3px 10px rgba(245,158,11,.35); }
+.btn-install-update:disabled { opacity: .5; cursor: not-allowed; }
+
+.setting-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+}
+.setting-label { font-size: 13px; color: var(--text2); line-height: 1.4; user-select: none; }
+
+/* Toggle switch */
+.toggle { flex-shrink: 0; display: inline-block; position: relative; }
+.toggle input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  display: block; width: 38px; height: 22px; border-radius: 11px;
+  background: var(--border2); cursor: pointer;
+  transition: background .2s; position: relative;
+}
+.toggle-track::after {
+  content: ''; position: absolute;
+  top: 3px; left: 3px; width: 16px; height: 16px;
+  border-radius: 50%; background: #fff;
+  transition: left .2s; box-shadow: 0 1px 3px rgba(0,0,0,.25);
+}
+.toggle input:checked + .toggle-track { background: var(--accent); }
+.toggle input:checked + .toggle-track::after { left: 19px; }
+
+.settings-privacy-note {
+  font-size: 11.5px; color: var(--muted); line-height: 1.55;
+  padding: 8px 10px;
+  background: var(--surface2); border-radius: 6px;
+  border-left: 3px solid var(--border2);
+}
+
+.update-log-wrap {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.update-progress-track { height: 3px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+.update-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 2px;
+  transition: width .3s ease;
+}
+.update-log-wrap .log-area {
+  max-height: 200px;
+  border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface2);
+}
+
 /* ── RESPONSIVE ───────────────────────────────────── */
 @media (max-width: 700px) {
   :root { --sb-w: 0px; }
