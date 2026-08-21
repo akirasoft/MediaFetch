@@ -279,6 +279,24 @@ function toTikTokEmbedUrl(url) {
   return null;
 }
 
+// yt-dlp fallback for TikTok — robust when the embed page or CDN is unreliable
+function startTikTokFallback(downloadId, url, platformArgs, ffmpegArgs, downloadDir) {
+  broadcast({ type: 'status', downloadId, message: 'Downloading watermark-free...' });
+  getTikTokTitle(url, platformArgs).then((title) => {
+    const safeName = (title || `tiktok_${downloadId}`).replace(/[\\/:*?"<>|]/g, '_').substring(0, 200);
+    const outTpl = path.join(downloadDir, `${safeName}.mp4`);
+    broadcast({ type: 'filename', downloadId, filename: `${safeName}.mp4` });
+    const args = [
+      '--no-playlist',
+      '-f', 'bestvideo[vcodec^=avc][height<=1080]+bestaudio/bestvideo[height<=1080]+bestaudio/bestvideo+bestaudio/best',
+      '--merge-output-format', 'mp4',
+      ...ffmpegArgs, ...platformArgs,
+      '-o', outTpl, '--progress', url
+    ];
+    startProc(downloadId, args, { url, title: safeName });
+  });
+}
+
 // TikTok watermark-free download
 async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, ffmpegArgs, downloadDir, height) {
   const ffmpegBin = path.join(FFMPEG_PATH, 'ffmpeg.exe');
@@ -304,7 +322,7 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
   });
 
   if (!embedPageData) {
-    broadcast({ type: 'error', downloadId, message: 'Embed page failed to load.' });
+    startTikTokFallback(downloadId, url, platformArgs, ffmpegArgs, downloadDir);
     return;
   }
 
@@ -312,19 +330,22 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
     .replace(/\\u([0-9a-fA-F]{4})/g, (m, c) => String.fromCharCode(parseInt(c, 16)))
     .replace(/&amp;/g, '&');
 
-  const videoSrcMatch = html.match(/<video[^>]+src="(https:\/\/[^"]+tiktokcdn[^"]+)"/);
-  if (!videoSrcMatch) {
-    broadcast({ type: 'status', downloadId, message: 'Downloading via embed URL...' });
-    const title = await getTikTokTitle(url, platformArgs);
-    const safeName = (title || `tiktok_${downloadId}`).replace(/[\\/:*?"<>|]/g, '_');
-    const outTpl = path.join(downloadDir, `${safeName}.mp4`);
-    const args = ['--playlist-items', '1', '--remux-video', 'mp4', '--merge-output-format', 'mp4',
-      ...ffmpegArgs, '-o', outTpl, '--progress', embedUrl];
-    startProc(downloadId, args, { url, title: safeName });
-    return;
+  // Try video tag, then JSON payload (TikTok changed embed page over time)
+  let playUrl = null;
+  const videoTagMatch = html.match(/<video[^>]+src="(https:\/\/[^"]+(?:tiktokcdn|tiktok\.com|tiktokv\.com)[^"]+)"/);
+  if (videoTagMatch) {
+    playUrl = videoTagMatch[1];
+  } else {
+    // __NEXT_DATA__ or inline JSON: look for playAddr / play_addr URL lists
+    const jsonUrlMatch = html.match(/"(?:playAddr|play_addr)"\s*:\s*\{[^}]*"[Uu]rl[Ll]ist"\s*:\s*\[\s*"(https:[^"]+)"/);
+    if (jsonUrlMatch) playUrl = jsonUrlMatch[1].replace(/\\/g, '');
   }
 
-  const playUrl = videoSrcMatch[1];
+  if (!playUrl) {
+    // yt-dlp fallback — exclude download_addr which has baked-in watermark
+    startTikTokFallback(downloadId, url, platformArgs, ffmpegArgs, downloadDir);
+    return;
+  }
   const titleMatch = html.match(/"desc"\s*:\s*"([^"]+)"/);
   const rawTitle = titleMatch ? titleMatch[1] : '';
   const titleFromPage = rawTitle.replace(/[\\/:*?"<>|]/g, '_').trim();
@@ -339,11 +360,13 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
 
   let downloaded = 0;
   let contentLength = 0;
+  let cancelled = false;
   const videoDownloaded = await new Promise((resolve) => {
     const https = require('https');
     const fileStream = fs.createWriteStream(tmpRaw);
 
-    function doGet(dlUrl, depth) {
+    function doGet(dlUrl, attempt, depth) {
+      if (cancelled) { resolve(false); return; }
       if (depth > 5) { resolve(false); return; }
       https.get(dlUrl, {
         headers: {
@@ -353,11 +376,18 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
         }
       }, (res) => {
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-          doGet(res.headers.location, depth + 1);
+          res.resume();
+          doGet(res.headers.location, attempt, depth + 1);
           return;
         }
         if (res.statusCode !== 200 && res.statusCode !== 206) {
-          resolve(false); return;
+          res.resume();
+          if (attempt < 3) {
+            setTimeout(() => doGet(dlUrl, attempt + 1, depth), 1500);
+          } else {
+            resolve(false);
+          }
+          return;
         }
         contentLength = parseInt(res.headers['content-length'] || '0', 10);
         res.on('data', (chunk) => {
@@ -369,19 +399,26 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
         res.pipe(fileStream);
         res.on('end', () => { fileStream.end(); resolve(true); });
         res.on('error', () => resolve(false));
-      }).on('error', () => resolve(false));
+      }).on('error', () => {
+        if (attempt < 3) {
+          setTimeout(() => doGet(dlUrl, attempt + 1, depth), 1500);
+        } else {
+          resolve(false);
+        }
+      });
     }
-    doGet(playUrl, 0);
+    doGet(playUrl, 0, 0);
 
     downloads.set(downloadId, {
-      proc: { kill: () => { fileStream.destroy(); resolve(false); } }
+      proc: { kill: () => { cancelled = true; fileStream.destroy(); resolve(false); } }
     });
   });
 
   if (!videoDownloaded || !fs.existsSync(tmpRaw)) {
     try { fs.unlinkSync(tmpRaw); } catch {}
-    broadcast({ type: 'error', downloadId, message: 'Video download failed.' });
     downloads.delete(downloadId);
+    if (cancelled) return;
+    startTikTokFallback(downloadId, url, platformArgs, ffmpegArgs, downloadDir);
     return;
   }
 
@@ -402,19 +439,20 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
 
   let delogoFilter = '';
   if (probeOut && probeOut.w && probeOut.h) {
-    const lx = Math.round(probeOut.w * 0.65);
-    const ly = Math.round(probeOut.h * 0.86);
-    const lw = probeOut.w - lx - 2;
-    const lh = probeOut.h - ly - 2;
-    delogoFilter = `delogo=x=${lx}:y=${ly}:w=${lw}:h=${lh}`;
+    // Top-left: TikTok logo + @username
+    const tlW = Math.round(probeOut.w * 0.32);
+    const tlH = Math.round(probeOut.h * 0.09);
+    // Bottom-right: spinning TikTok logo
+    const brX = Math.round(probeOut.w * 0.78);
+    const brY = Math.round(probeOut.h * 0.86);
+    const brW = probeOut.w - brX - 2;
+    const brH = probeOut.h - brY - 2;
+    // Use show=1 to avoid ffmpeg rejecting the filter on non-watermark areas
+    delogoFilter = `delogo=x=2:y=2:w=${tlW}:h=${tlH}:show=0,delogo=x=${brX}:y=${brY}:w=${brW}:h=${brH}:show=0`;
   }
 
-  const ffmpegDelogoArgs = delogoFilter
-    ? ['-i', tmpRaw, '-vf', delogoFilter, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-c:a', 'copy', '-y', finalOut]
-    : ['-i', tmpRaw, '-c', 'copy', '-y', finalOut];
-
-  await new Promise((resolve) => {
-    const proc = spawn(ffmpegBin, ffmpegDelogoArgs);
+  const runFfmpeg = (args) => new Promise((resolve) => {
+    const proc = spawn(ffmpegBin, args);
     downloads.set(downloadId, { proc });
     proc.stderr.on('data', (d) => {
       const line = d.toString();
@@ -429,15 +467,31 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
     proc.on('error', resolve);
   });
 
+  if (delogoFilter) {
+    // Try delogo + H.264 re-encode
+    await runFfmpeg(['-i', tmpRaw, '-vf', delogoFilter, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-y', finalOut]);
+    // Fallback: if delogo produced empty/tiny file, just remux without filter
+    const finalSize = fs.existsSync(finalOut) ? fs.statSync(finalOut).size : 0;
+    if (finalSize < 10000) {
+      try { if (fs.existsSync(finalOut)) fs.unlinkSync(finalOut); } catch {}
+      broadcast({ type: 'status', downloadId, message: 'Remuxing...' });
+      await runFfmpeg(['-i', tmpRaw, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-y', finalOut]);
+    }
+  } else {
+    await runFfmpeg(['-i', tmpRaw, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-y', finalOut]);
+  }
+
   try { fs.unlinkSync(tmpRaw); } catch {}
   downloads.delete(downloadId);
 
-  if (fs.existsSync(finalOut)) {
+  const outSize = fs.existsSync(finalOut) ? fs.statSync(finalOut).size : 0;
+  if (outSize > 10000) {
     broadcast({ type: 'progress', downloadId, percent: 100 });
     broadcast({ type: 'complete', downloadId });
     appendHistory({ url, title: safeName, filename: `${safeName}.mp4` });
   } else {
-    broadcast({ type: 'error', downloadId, message: 'Watermark removal failed.' });
+    try { if (fs.existsSync(finalOut)) fs.unlinkSync(finalOut); } catch {}
+    startTikTokFallback(downloadId, url, platformArgs, ffmpegArgs, downloadDir);
   }
 }
 
@@ -790,11 +844,11 @@ app.post('/api/download', (req, res) => {
           const outTpl = title
             ? path.join(downloadDir, `${title}.mp4`)
             : path.join(downloadDir, '%(title)s.mp4');
-          startProc(downloadId, ['--playlist-items', '1', '--remux-video', 'mp4', '--merge-output-format', 'mp4', '-o', outTpl, '--progress', tikEmbedUrl], { url, title });
+          startProc(downloadId, ['--no-playlist', '-f', 'bestvideo[vcodec^=avc][height<=1080]+bestaudio/bestvideo[height<=1080]+bestaudio/bestvideo+bestaudio/best', '--merge-output-format', 'mp4', ...ffmpegArgs, ...platformArgs, '-o', outTpl, '--progress', url], { url, title });
         });
         return;
       }
-      fmt = `best[ext=mp4][acodec!=none]/best[acodec!=none]/best`;
+      fmt = `bestvideo[vcodec^=avc][height<=1080]+bestaudio/bestvideo[height<=1080]+bestaudio/bestvideo+bestaudio/best`;
     } else if (hasFfmpeg) {
       fmt = [
         `bestvideo[height<=${height}][ext=mp4][vcodec^=avc]+bestaudio[ext=m4a]`,
