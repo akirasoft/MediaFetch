@@ -1,187 +1,242 @@
-# ↓ MediaFetch
+# MediaFetch
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
-**[yt-dlp](https://github.com/yt-dlp/yt-dlp) için şık, yerel çalışan bir arayüz — YouTube, TikTok, Instagram, SoundCloud ve 1.000'den fazla siteden müzik & video indirin. Brave/Chrome tarayıcı eklentisiyle birlikte gelir.**
-
-![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=nodedotjs&logoColor=white)
-![Lisans](https://img.shields.io/badge/lisans-MIT-blue)
-![Platform](https://img.shields.io/badge/platform-Windows%20%C2%B7%20Linux%20%C2%B7%20macOS-0078D4)
-![yt-dlp](https://img.shields.io/badge/powered%20by-yt--dlp-FF0000)
-[![Yapımcı](https://img.shields.io/badge/yap%C4%B1mc%C4%B1-OuzK-orange)](https://github.com/akirasoft)
+YouTube, TikTok, Instagram, SoundCloud ve 1000+ siteden müzik/video indirme aracı.  
+Kendi sunucuna (VPS/VDS) kurarsın, arkadaşlarına kişisel anahtar verirsin; indirilen dosyalar doğrudan onların bilgisayarına gider — sunucuda hiçbir şey kalmaz.
 
 ---
 
-> 🖥️ **Sunucuda çalıştırmak mı istiyorsun?** Uygulama artık Ubuntu / Docker /
-> Pterodactyl üzerinde de çalışıyor; Chrome eklentisi uzaktaki sunucuya bağlanıp
-> biten dosyayı bilgisayarına indiriyor. Adım adım anlatım:
-> **[KURULUM-SUNUCU.md](KURULUM-SUNUCU.md)**
+## Nasıl Çalışır?
 
-> ⚠️ **Yasal Uyarı:** Bu araç yalnızca indirme hakkına sahip olduğunuz içerikler için tasarlanmıştır — kamu malı, Creative Commons lisanslı içerikler veya telif hakkı sahibinin izin verdiği materyaller. Telif hakkıyla korunan içeriklerin yetkisiz indirilmesi, platformun Kullanım Koşulları'nı ve geçerli telif hakkı mevzuatını ihlal edebilir. **Bu yazılımı nasıl kullandığınızdan yalnızca siz sorumlusunuz.** Yapımcı bu aracı olduğu gibi sunar; kötüye kullanımdan doğacak hiçbir sorumluluk kabul edilmez.
-
-## Özellikler
-
-- **1.000'den fazla site desteği** — YouTube, TikTok, Instagram, SoundCloud, Twitter/X, Vimeo, Twitch ve yt-dlp'nin desteklediği her şey
-- **TikTok filigran kaldırma** — temiz oynatma akışını indirir, ffmpeg `delogo` filtresiyle içine işlenmiş filigranı siler
-- **MP3 çıkarma** — 128 / 192 / 320 kbps, her platformda
-- **MP4 indirme** — 360p → 4K, H.264 öncelikli (HEVC codec gerekmez)
-- **Editör modu** — DaVinci Resolve / Premiere için sessiz `.mp4` video ve `.wav` sesi ayrı dosya olarak kaydeder
-- **Oynatma listesi desteği** — YouTube/SoundCloud playlist URL'lerini algılar, tüm öğeleri her biri için ilerleme göstererek indirir
-- **İndirme geçmişi** — tamamlanan her indirmeyi yerel olarak kaydeder (`history.json`)
-- **Tarayıcı bildirimleri** — indirme tamamlandığında masaüstü bildirimi gönderir
-- **Otomatik yt-dlp güncelleme** — her sunucu başlatmada yeni sürüm kontrolü yapar
-- **Tarayıcı eklentisi** — Brave veya Chrome'da mevcut sekmeyi tek tıkla indir (TR / EN / ES arayüz)
-- **Koyu & açık tema** — sistem temasını takip eder, tam CSS-değişken teması
-- **Gerçek zamanlı ilerleme** — WebSocket tabanlı, hız, ETA ve dosya adını canlı gösterir
+```
+Kullanıcı → Tarayıcı / Chrome Eklentisi
+                 ↓
+         MediaFetch Sunucusu (senin VPS'in)
+                 ↓
+        yt-dlp ile video indirilir
+                 ↓
+     Dosya kullanıcının tarayıcısına gönderilir
+                 ↓
+         Kullanıcının bilgisayarına iner
+   (Sunucuda hiçbir şey kalmaz — anında silinir)
+```
 
 ---
 
 ## Gereksinimler
 
-| Bağımlılık | Notlar |
+| | Minimum |
 |---|---|
-| [Node.js 18+](https://nodejs.org/) | JavaScript çalışma ortamı |
-| [ffmpeg](https://www.gyan.dev/ffmpeg/builds/) | İsteğe bağlı ama önerilir — ses birleştirme, WAV çıktısı, TikTok filigran kaldırma için gerekli. WinGet ile kurulum: `winget install Gyan.FFmpeg` |
-
-> yt-dlp ilk çalıştırmada otomatik indirilir — manuel kurulum gerekmez.
+| İşletim sistemi | Ubuntu 20.04+ / Debian 11+ |
+| RAM | 512 MB |
+| Disk | 2 GB |
+| Node.js | 18+ |
+| yt-dlp | Otomatik kurulur |
+| ffmpeg | Otomatik kurulur |
 
 ---
 
-## Hızlı Başlangıç
+## Kurulum (Ubuntu / Debian)
+
+### 1. Node.js kur
 
 ```bash
-# 1. Repoyu klonla
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt-get install -y nodejs
+node --version   # v22.x.x görmeli
+```
+
+### 2. Projeyi indir
+
+```bash
 git clone https://github.com/akirasoft/mediafetch.git
 cd mediafetch
+npm install --omit=dev
+```
 
-# 2. start.bat'a çift tıkla  (veya manuel çalıştır)
-node setup.js   # yt-dlp'yi bin/ klasörüne indirir
-npm install
+### 3. yt-dlp ve ffmpeg kur
+
+```bash
+bash scripts/install-linux.sh
+```
+
+Bu script:
+- Doğru mimariye göre yt-dlp indirir ve SHA256 doğrular
+- ffmpeg statik derlemesini kurar
+- Her ikisini `bin/` klasörüne yerleştirir
+
+### 4. Ortam değişkenlerini ayarla
+
+```bash
+cp .env.example .env
+nano .env
+```
+
+`.env` dosyasını düzenle:
+
+```env
+# Sahip şifresi — en az 24 karakter, rastgele bir şey yaz
+MEDIAFETCH_TOKEN=buraya_guclu_bir_sifre_yaz
+
+# Dinlenecek port (güvenlik duvarında açık olmalı)
+SERVER_PORT=8422
+
+# Sunucunun dışarıdan erişilen adresi (subdomain varsa onu yaz)
+MEDIAFETCH_PUBLIC_URL=http://SUNUCU_IP_ADRESI:8422
+
+# Dosya saklama süresi (dakika) — 0 = saklamaz, anında siler
+MEDIAFETCH_RETENTION_MIN=0
+```
+
+### 5. Başlat
+
+```bash
 node server.js
 ```
 
-Tarayıcı otomatik olarak **http://localhost:3434** adresinde açılır.
-
-**Ya da sadece `start.bat`'a çift tıkla** — her şeyi halleder (yt-dlp indirme, npm install, sunucu başlatma).
-
----
-
-## Tarayıcı Eklentisi
-
-`extension/` klasörü, Brave ve Chrome için Manifest V3 eklentisi içerir.
-
-**Kurulum (geliştirici modu):**
-
-1. `brave://extensions` veya `chrome://extensions` adresini aç
-2. Sağ üstte **Geliştirici modu**nu etkinleştir
-3. **Paketlenmemişi yükle** → `extension/` klasörünü seç
-4. Araç çubuğunda ↓ simgesi görünür
-
-> Eklenti, 3434 portundaki yerel sunucuya bağlanır. Önce sunucuyu başlatın.
-
-**Eklenti arayüz dilleri:** Türkçe · İngilizce · İspanyolca (tarayıcı başına kaydedilir)
-
----
-
-## Proje Yapısı
-
+Çıktıda şunu görmelisin:
 ```
-mediafetch/
-├── server.js          # Express + WebSocket sunucusu, tüm indirme mantığı
-├── setup.js           # Tek seferlik yt-dlp indirici
-├── start.bat          # Windows başlatıcı (kurulum + npm install + sunucu)
-├── public/
-│   ├── index.html     # Ana web arayüzü
-│   ├── app.js         # Ön yüz JS (WebSocket istemcisi, UI mantığı)
-│   └── style.css      # Tam tasarım sistemi (koyu/açık token'lar)
-├── extension/
-│   ├── manifest.json  # MV3, izinler: activeTab, tabs, storage
-│   ├── popup.html     # Eklenti popup'ı
-│   ├── popup.js       # i18n (TR/EN/ES), WebSocket istemcisi
-│   └── popup.css      # Koyu eklenti teması
-├── bin/               # yt-dlp.exe burada bulunur (gitignored)
-└── downloads/         # Varsayılan çıktı klasörü (gitignored)
+✓ MediaFetch sunucu modunda çalışıyor
+✓ http://0.0.0.0:8422 adresinde dinleniyor
+✓ Giriş: http://SUNUCU_IP:8422/login?t=...
 ```
 
 ---
 
-## Nasıl Çalışır
+## Arka Planda Çalıştırma (PM2)
 
-```
-Tarayıcı / Eklenti
-      │  HTTP POST /api/download
-      ▼
-  Express sunucusu (port 3434)
-      │  yt-dlp başlatır (TikTok için direkt HTTPS)
-      ▼
-  yt-dlp / ffmpeg
-      │  ilerleme satırları gerçek zamanlı ayrıştırılır
-      ▼
-  WebSocket yayını → tüm bağlı istemciler
+Terminali kapattığında sunucu durmaya devam etmek için:
+
+```bash
+sudo npm install -g pm2
+pm2 start server.js --name mediafetch
+pm2 startup          # Sunucu yeniden başlayınca otomatik başlasın
+pm2 save
 ```
 
-**TikTok özel akışı:**
-1. Node.js `https` ile embed sayfasını (`tiktok.com/embed/v2/<id>`) çeker
-2. `<video src>` oynatma URL'ini ayıklar (birleşik H.264 + AAC, kimlik doğrulama gerekmez)
-3. Dosyayı doğrudan indirir (0–75% ilerleme)
-4. Kare boyutlarını almak için `ffprobe` çalıştırır
-5. Sağ alt köşedeki filigran bölgesini silmek için `ffmpeg delogo` filtresi uygular
-6. Temiz `.mp4` dosyasını kaydeder
+Yararlı komutlar:
+
+```bash
+pm2 logs mediafetch    # Canlı log
+pm2 restart mediafetch # Yeniden başlat
+pm2 stop mediafetch    # Durdur
+```
 
 ---
 
-## Desteklenen Platformlar (öne çıkanlar)
+## Docker ile Kurulum (Alternatif)
 
-| Platform | Ses | Video | Notlar |
-|---|---|---|---|
-| YouTube | ✅ | ✅ | Oynatma listesi desteklenir |
-| SoundCloud | ✅ | — | Oynatma listesi desteklenir |
-| TikTok | ✅ | ✅ | Filigran delogo ile kaldırılır |
-| Instagram | ✅ | ✅ | Reels, gönderiler |
-| Twitter / X | ✅ | ✅ | |
-| Vimeo | ✅ | ✅ | |
-| Twitch | ✅ | ✅ | Klipler & VOD'lar |
-| 1.000'den fazlası | ✅ | ✅ | yt-dlp'nin desteklediği her şey |
+```bash
+cp .env.example .env
+# .env dosyasını düzenle (yukarıdaki gibi)
+
+docker compose up -d
+```
+
+Durdur:
+```bash
+docker compose down
+```
 
 ---
 
-## API Referansı
+## Güvenlik Duvarı
 
-| Yöntem | Endpoint | Açıklama |
+Portu dışarıya aç (UFW kullanıyorsan):
+
+```bash
+sudo ufw allow 8422/tcp
+sudo ufw reload
+```
+
+---
+
+## HTTPS Almak (Ücretsiz — Cloudflare Tunnel)
+
+Sabit IP yoksa veya HTTPS isteniyorsa `.env` içine ekle:
+
+```env
+MEDIAFETCH_TUNNEL=1
+```
+
+Sunucu yeniden başlayınca `https://xxxx.trycloudflare.com` şeklinde bir adres üretir.  
+**Not:** Ücretsiz tünelin adresi her yeniden başlatmada değişir. Sabit adres için `MEDIAFETCH_PUBLIC_URL` ile HTTP adresini kullan.
+
+---
+
+## Arkadaşlara Erişim Vermek
+
+1. Sahip anahtarınla giriş yap: `http://SUNUCU_IP:8422/login?t=SENIN_TOKEN`
+2. **Ayarlar → Erişim Anahtarları**
+3. Arkadaşın adını yaz → **Oluştur**
+4. Zincir simgesine (🔗) tıkla → linki kopyala → arkadaşına gönder
+
+Her kişinin ayrı anahtarı vardır:
+- Kimin ne indirdiği geçmişte görünür
+- Birini iptal etmek diğerlerini etkilemez
+- Anahtarlar sunucu yeniden başlayınca silinmez
+
+---
+
+## Chrome / Brave Eklentisi
+
+### Kurulum
+
+1. `brave://extensions` veya `chrome://extensions` aç
+2. **Geliştirici modu** → AÇ
+3. **Paketlenmemiş öğe yükle** → `extension/` klasörünü seç
+4. Eklenti simgesi → ⚙ Ayarlar:
+
+| Alan | Değer |
+|---|---|
+| Sunucu URL | `http://SUNUCU_IP:8422` |
+| Token | Kendi anahtarın |
+| Otomatik kaydet | ✅ |
+
+### Kullanım
+
+YouTube / TikTok / Instagram / SoundCloud sayfasına git →  
+Sağ altta **mor ↓ butonu** belirir → tıkla → format seç → dosya bilgisayarına iner.
+
+Desteklenen siteler: YouTube, YouTube Shorts, TikTok, Instagram Reels,  
+Twitter/X videoları, SoundCloud, Vimeo ve yt-dlp'nin desteklediği 1000+ site.
+
+---
+
+## Ortam Değişkenleri (Tam Liste)
+
+| Değişken | Varsayılan | Açıklama |
 |---|---|---|
-| `POST` | `/api/info` | Video meta verisi ve mevcut formatları al |
-| `POST` | `/api/download` | İndirme başlat |
-| `POST` | `/api/cancel/:id` | Aktif indirmeyi iptal et |
-| `GET` | `/api/history` | İndirme geçmişini listele |
-| `POST` | `/api/history/clear` | Geçmişi temizle |
-| `POST` | `/api/playlist-info` | Playlist başlığı ve öğe sayısını al |
-| `POST` | `/api/update-ytdlp` | yt-dlp güncellemesini manuel tetikle |
-| `GET` | `/api/ffmpeg-status` | ffmpeg'in mevcut olup olmadığını kontrol et |
-| `GET` | `/api/default-dir` | Varsayılan indirme dizinini al |
-| `WS` | `ws://localhost:3434` | Gerçek zamanlı ilerleme olayları |
+| `MEDIAFETCH_TOKEN` | — | **Zorunlu** — sahip şifresi |
+| `SERVER_PORT` | `8422` | Dinlenecek port |
+| `MEDIAFETCH_PUBLIC_URL` | — | Dışarıdan erişilen adres |
+| `MEDIAFETCH_RETENTION_MIN` | `0` | Dosya saklama süresi (dk), 0 = anında sil |
+| `MEDIAFETCH_TUNNEL` | `0` | `1` = Cloudflare tüneli başlat |
+| `MEDIAFETCH_DOWNLOAD_DIR` | `downloads/` | İndirme klasörü |
+| `MEDIAFETCH_MODE` | otomatik | `server` veya `local` |
 
 ---
 
-## WebSocket Olayları
+## Testler
 
-```json
-{ "type": "filename",      "downloadId": "...", "filename": "sarki.mp3" }
-{ "type": "progress",      "downloadId": "...", "percent": 45.2, "speed": "2.1MiB/s", "eta": "00:12" }
-{ "type": "status",        "downloadId": "...", "message": "Birleştiriliyor..." }
-{ "type": "complete",      "downloadId": "..." }
-{ "type": "error",         "downloadId": "...", "message": "..." }
-{ "type": "cancelled",     "downloadId": "..." }
-{ "type": "ytdlp-version", "version": "2026.07.04" }
+```bash
+npm test
 ```
 
+66 test: TikTok indirme (32), sunucu modları (18), erişim anahtarları (16).
+
 ---
 
-## Yapımcı
+## Yerel Kurulum (Windows / macOS)
 
-**[OuzK](https://github.com/akirasoft)** tarafından yapılmıştır
+Sunucu kurmak istemiyorsan, kendi bilgisayarında çalışan sürüm için:
+
+👉 **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)** — Node.js, yt-dlp ve Brave eklentisi dahil; tek başına çalışır.
 
 ---
 
 ## Lisans
 
-MIT — [LICENSE](LICENSE) dosyasına bakın
+MIT — ticari kullanım dahil serbestçe kullanılabilir.  
+yt-dlp ve ffmpeg kendi lisanslarına tabidir.

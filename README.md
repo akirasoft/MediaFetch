@@ -1,147 +1,149 @@
 # MediaFetch
 
-YouTube, TikTok, Instagram, SoundCloud ve 1000+ siteden müzik/video indirme aracı.  
-Kendi sunucuna (VPS/VDS) kurarsın, arkadaşlarına kişisel anahtar verirsin; indirilen dosyalar doğrudan onların bilgisayarına gider.
+> 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
+
+Download music & video from YouTube, TikTok, Instagram, SoundCloud, and 1,000+ sites.  
+Self-host it on your own VPS, give friends personal access keys — files go straight to **their** computer, nothing stays on the server.
 
 ---
 
-## Nasıl Çalışır?
+## How It Works
 
 ```
-Kullanıcı → Tarayıcı / Chrome Eklentisi
-                 ↓
-         MediaFetch Sunucusu (senin VPS'in)
-                 ↓
-        yt-dlp ile video indirilir
-                 ↓
-     Dosya kullanıcının tarayıcısına gönderilir
-                 ↓
-         Kullanıcının bilgisayarına iner
-   (Sunucuda hiçbir şey kalmaz — anında silinir)
+User → Browser / Chrome Extension
+              ↓
+    MediaFetch Server (your VPS)
+              ↓
+     yt-dlp downloads the file
+              ↓
+  File is sent to the user's browser
+              ↓
+      Saved on their computer
+  (deleted from the server instantly)
 ```
 
 ---
 
-## Gereksinimler
+## Requirements
 
 | | Minimum |
 |---|---|
-| İşletim sistemi | Ubuntu 20.04+ / Debian 11+ |
+| OS | Ubuntu 20.04+ / Debian 11+ |
 | RAM | 512 MB |
 | Disk | 2 GB |
 | Node.js | 18+ |
-| yt-dlp | Otomatik kurulur |
-| ffmpeg | Otomatik kurulur |
+| yt-dlp | installed automatically |
+| ffmpeg | installed automatically |
 
 ---
 
-## Kurulum (Ubuntu / Debian)
+## Installation (Ubuntu / Debian)
 
-### 1. Node.js kur
+### 1. Install Node.js
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
 sudo apt-get install -y nodejs
-node --version   # v22.x.x görmeli
+node --version   # should print v22.x.x
 ```
 
-### 2. Projeyi indir
+### 2. Clone the project
 
 ```bash
-git clone https://github.com/KULLANICI_ADI/mediafetch.git
+git clone https://github.com/akirasoft/mediafetch.git
 cd mediafetch
 npm install --omit=dev
 ```
 
-### 3. yt-dlp ve ffmpeg kur
+### 3. Install yt-dlp and ffmpeg
 
 ```bash
 bash scripts/install-linux.sh
 ```
 
-Bu script:
-- Doğru mimariye göre yt-dlp indirir ve SHA256 doğrular
-- ffmpeg statik derlemesini kurar
-- Her ikisini `bin/` klasörüne yerleştirir
+This script:
+- Downloads yt-dlp for your architecture and verifies SHA256
+- Installs a static ffmpeg build
+- Places both in the `bin/` directory
 
-### 4. Ortam değişkenlerini ayarla
+### 4. Set environment variables
 
 ```bash
 cp .env.example .env
 nano .env
 ```
 
-`.env` dosyasını düzenle:
+Edit `.env`:
 
 ```env
-# Sahip şifresi — en az 24 karakter, rastgele bir şey yaz
-MEDIAFETCH_TOKEN=buraya_guclu_bir_sifre_yaz
+# Owner password — at least 24 random characters
+MEDIAFETCH_TOKEN=replace_with_a_strong_password
 
-# Dinlenecek port (güvenlik duvarında açık olmalı)
+# Port to listen on (must be open in your firewall)
 SERVER_PORT=8422
 
-# Sunucunun dışarıdan erişilen adresi (subdomain varsa onu yaz)
-MEDIAFETCH_PUBLIC_URL=http://SUNUCU_IP_ADRESI:8422
+# Public address of your server (use a subdomain if you have one)
+MEDIAFETCH_PUBLIC_URL=http://YOUR_SERVER_IP:8422
 
-# Dosya saklama süresi (dakika) — 0 = saklamaz, anında siler
+# File retention in minutes — 0 = delete immediately after transfer
 MEDIAFETCH_RETENTION_MIN=0
 ```
 
-### 5. Başlat
+### 5. Start
 
 ```bash
 node server.js
 ```
 
-Çıktıda şunu görmelisin:
+You should see:
 ```
-✓ MediaFetch sunucu modunda çalışıyor
-✓ http://0.0.0.0:8422 adresinde dinleniyor
-✓ Giriş: http://SUNUCU_IP:8422/login?t=...
+✓ MediaFetch running in server mode
+✓ Listening on http://0.0.0.0:8422
+✓ Login: http://YOUR_SERVER_IP:8422/login?t=...
 ```
 
 ---
 
-## Arka Planda Çalıştırma (PM2)
+## Run in the Background (PM2)
 
-Terminali kapattığında sunucu durmaya devam etmek için:
+Keep the server running after you close the terminal:
 
 ```bash
 sudo npm install -g pm2
 pm2 start server.js --name mediafetch
-pm2 startup          # Sunucu yeniden başlayınca otomatik başlasın
+pm2 startup          # auto-start on reboot
 pm2 save
 ```
 
-Yararlı komutlar:
+Useful commands:
 
 ```bash
-pm2 logs mediafetch    # Canlı log
-pm2 restart mediafetch # Yeniden başlat
-pm2 stop mediafetch    # Durdur
+pm2 logs mediafetch    # live logs
+pm2 restart mediafetch # restart
+pm2 stop mediafetch    # stop
 ```
 
 ---
 
-## Docker ile Kurulum (Alternatif)
+## Docker (Alternative)
 
 ```bash
 cp .env.example .env
-# .env dosyasını düzenle (yukarıdaki gibi)
+# edit .env as shown above
 
 docker compose up -d
 ```
 
-Durdur:
+Stop:
 ```bash
 docker compose down
 ```
 
 ---
 
-## Güvenlik Duvarı
+## Firewall
 
-Portu dışarıya aç (UFW kullanıyorsan):
+Open the port (UFW):
 
 ```bash
 sudo ufw allow 8422/tcp
@@ -150,92 +152,91 @@ sudo ufw reload
 
 ---
 
-## HTTPS Almak (Ücretsiz — Cloudflare Tunnel)
+## Free HTTPS (Cloudflare Tunnel)
 
-Sabit IP yoksa veya HTTPS isteniyorsa:
+No static IP, or want HTTPS? Add to `.env`:
 
-```bash
-# .env içine ekle:
+```env
 MEDIAFETCH_TUNNEL=1
 ```
 
-Sunucu yeniden başlayınca `https://xxxx.trycloudflare.com` şeklinde bir adres üretir.  
-**Not:** Ücretsiz tünelin adresi her yeniden başlatmada değişir. Sabit adres için `MEDIAFETCH_PUBLIC_URL` ile HTTP adresini kullan.
+On next start the server prints a `https://xxxx.trycloudflare.com` URL.  
+**Note:** The free tunnel URL changes on every restart. For a stable address, set `MEDIAFETCH_PUBLIC_URL` with an HTTP address.
 
 ---
 
-## Arkadaşlara Erişim Vermek
+## Giving Friends Access
 
-1. Sahip anahtarınla giriş yap: `http://SUNUCU_IP:8422/login?t=SENIN_TOKEN`
-2. **Ayarlar → Erişim Anahtarları**
-3. Arkadaşın adını yaz → **Oluştur**
-4. Zincir simgesine (🔗) tıkla → linki kopyala → arkadaşına gönder
+1. Log in with your owner token: `http://YOUR_SERVER_IP:8422/login?t=YOUR_TOKEN`
+2. **Settings → Access Keys**
+3. Type a name → **Create**
+4. Click the chain icon (🔗) → copy the link → send it to your friend
 
-Her kişinin ayrı anahtarı vardır:
-- Kimin ne indirdiği geçmişte görünür
-- Birini iptal etmek diğerlerini etkilemez
-- Anahtarlar sunucu yeniden başlayınca silinmez
+Each person gets their own key:
+- You can see who downloaded what in history
+- Revoking one key doesn't affect others
+- Keys survive server restarts
 
 ---
 
-## Chrome / Brave Eklentisi
+## Chrome / Brave Extension
 
-### Kurulum
+### Install
 
-1. `brave://extensions` veya `chrome://extensions` aç
-2. **Geliştirici modu** → AÇ
-3. **Paketlenmemiş öğe yükle** → `extension/` klasörünü seç
-4. Eklenti simgesi → ⚙ Ayarlar:
+1. Open `brave://extensions` or `chrome://extensions`
+2. **Developer mode** → ON
+3. **Load unpacked** → select the `extension/` folder
+4. Click the extension icon → ⚙ Settings:
 
-| Alan | Değer |
+| Field | Value |
 |---|---|
-| Sunucu URL | `http://SUNUCU_IP:8422` |
-| Token | Kendi anahtarın |
-| Otomatik kaydet | ✅ |
+| Server URL | `http://YOUR_SERVER_IP:8422` |
+| Token | Your access key |
+| Auto-save | ✅ |
 
-### Kullanım
+### Usage
 
-YouTube / TikTok / Instagram / SoundCloud sayfasına git →  
-Sağ altta **mor ↓ butonu** belirir → tıkla → format seç → dosya bilgisayarına iner.
+Go to a YouTube / TikTok / Instagram / SoundCloud page →  
+A **purple ↓ button** appears at the bottom-right → click → pick a format → file downloads to your computer.
 
-Desteklenen siteler: YouTube, YouTube Shorts, TikTok, Instagram Reels,  
-Twitter/X videoları, SoundCloud, Vimeo ve yt-dlp'nin desteklediği 1000+ site.
+Supported: YouTube, YouTube Shorts, TikTok, Instagram Reels,  
+Twitter/X videos, SoundCloud, Vimeo, and 1,000+ sites supported by yt-dlp.
 
 ---
 
-## Ortam Değişkenleri (Tam Liste)
+## Environment Variables
 
-| Değişken | Varsayılan | Açıklama |
+| Variable | Default | Description |
 |---|---|---|
-| `MEDIAFETCH_TOKEN` | — | **Zorunlu** — sahip şifresi |
-| `SERVER_PORT` | `8422` | Dinlenecek port |
-| `MEDIAFETCH_PUBLIC_URL` | — | Dışarıdan erişilen adres |
-| `MEDIAFETCH_RETENTION_MIN` | `0` | Dosya saklama süresi (dk), 0 = anında sil |
-| `MEDIAFETCH_TUNNEL` | `0` | `1` = Cloudflare tüneli başlat |
-| `MEDIAFETCH_DOWNLOAD_DIR` | `downloads/` | İndirme klasörü |
-| `MEDIAFETCH_MODE` | otomatik | `server` veya `local` |
+| `MEDIAFETCH_TOKEN` | — | **Required** — owner password |
+| `SERVER_PORT` | `8422` | Port to listen on |
+| `MEDIAFETCH_PUBLIC_URL` | — | Publicly reachable address |
+| `MEDIAFETCH_RETENTION_MIN` | `0` | File retention (minutes), 0 = instant delete |
+| `MEDIAFETCH_TUNNEL` | `0` | `1` = start Cloudflare tunnel |
+| `MEDIAFETCH_DOWNLOAD_DIR` | `downloads/` | Download directory |
+| `MEDIAFETCH_MODE` | auto | `server` or `local` |
 
 ---
 
-## Testler
+## Tests
 
 ```bash
 npm test
 ```
 
-66 test: TikTok indirme (32), sunucu modları (18), erişim anahtarları (16).
+66 tests: TikTok downloads (32), server modes (18), access keys (16).
 
 ---
 
-## Yerel Kurulum (Windows / macOS)
+## Run Locally (Windows / macOS)
 
-Sunucu kurmak istemiyorsan, kendi bilgisayarında çalışan sürüm için:
+Don't want a server? There's a standalone local version:
 
-👉 **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)** — Node.js, yt-dlp ve Brave eklentisi dahil; tek başına çalışır.
+👉 **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)** — runs entirely on your own machine, includes yt-dlp, ffmpeg, and the browser extension.
 
 ---
 
-## Lisans
+## License
 
-MIT — ticari kullanım dahil serbestçe kullanılabilir.  
-yt-dlp ve ffmpeg kendi lisanslarına tabidir.
+MIT — free for commercial use.  
+yt-dlp and ffmpeg are subject to their own licenses.
