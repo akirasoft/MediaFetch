@@ -27,7 +27,7 @@ if [ ! -x "$ROOT/bin/yt-dlp" ] && ! command -v yt-dlp >/dev/null 2>&1; then
   sh "$ROOT/scripts/install-linux.sh"
 fi
 
-if [ ! -d "$ROOT/node_modules/express" ]; then
+if [ ! -d "$ROOT/node_modules/express" ] || [ ! -d "$ROOT/node_modules/archiver" ]; then
   echo "node_modules eksik — npm install çalıştırılıyor..."
   npm install --omit=dev
 fi
