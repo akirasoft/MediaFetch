@@ -1,241 +1,451 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
   <title>MediaFetch</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='85'>⬇</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2335D6A4'/%3E%3Cg fill='none' stroke='%2305221A' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M32 13v27'/%3E%3Cpath d='M20 30l12 12 12-12'/%3E%3Cpath d='M18 51h28'/%3E%3C/g%3E%3C/svg%3E">
+  <script>
+    // Apply the saved theme before first paint (no flash).
+    (function () {
+      try {
+        var pref = localStorage.getItem('mf_theme') || 'dark';
+        var dark = pref === 'system' ? matchMedia('(prefers-color-scheme: dark)').matches : pref !== 'light';
+        document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      } catch (e) {}
+    })();
+  </script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- Icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-logo" viewBox="0 0 24 24"><path d="M12 3v13"/><path d="M6 11l6 6 6-6"/><path d="M5 21h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 12l5 5 5-5"/><path d="M5 21h14"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10"/><path d="M18 7h2"/><circle cx="16" cy="7" r="2"/><path d="M4 17h2"/><path d="M10 17h10"/><circle cx="8" cy="17" r="2"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9L9.6 3.9A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5L20 7"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+    <symbol id="i-arrow-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m11 6-6 6 6 6"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.9 4.9 1.4 1.4"/><path d="m17.7 17.7 1.4 1.4"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.3 17.7-1.4 1.4"/><path d="m19.1 4.9-1.4 1.4"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><path d="m22 8-6 4 6 4V8Z"/><rect x="2" y="6" width="14" height="12" rx="2"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/></symbol>
+    <symbol id="i-user-x" viewBox="0 0 24 24"><circle cx="10" cy="8" r="4"/><path d="M3 21v-1a6 6 0 0 1 12 0"/><path d="m17 11 5 5"/><path d="m22 11-5 5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M3 6h13"/><path d="M3 12h9"/><path d="M3 18h9"/><path d="m17 12 4 3-4 3v-6Z"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16h.01"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M4 12h3l3-8 4 16 3-8h3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 21v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-spinner" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9"/></symbol>
+  </defs>
+</svg>
+
 <div class="app">
 
-  <!-- ── TOP NAV ── -->
-  <header class="topnav">
-    <div class="topnav-brand">
-      <div class="brand-mark">↓</div>
-      <span class="brand-name">MediaFetch</span>
-    </div>
+  <!-- ─────────── SIDEBAR ─────────── -->
+  <aside class="sidebar" aria-label="MediaFetch">
+    <a class="brand" href="#/" aria-label="MediaFetch">
+      <span class="brand-mark"><svg class="i"><use href="#i-logo"/></svg></span>
+      <span class="brand-text">
+        <span class="brand-name">MediaFetch</span>
+        <span class="brand-sub" id="sbVersion">yt-dlp · localhost</span>
+      </span>
+    </a>
 
-    <nav class="topnav-nav">
-      <a class="tnav-link active" href="#" data-i18n="nav_discover">Keşfet</a>
-      <a class="tnav-link" href="#downloadsSection" data-i18n="nav_downloads">İndirmeler</a>
+    <nav class="nav" aria-label="Menu">
+      <a class="nav-item" href="#/" data-view="home">
+        <svg class="i"><use href="#i-search"/></svg>
+        <span data-i18n="nav_discover">Keşfet</span>
+      </a>
+      <a class="nav-item" href="#/downloads" data-view="downloads">
+        <svg class="i"><use href="#i-download"/></svg>
+        <span data-i18n="nav_downloads">İndirmeler</span>
+        <span class="nav-count" id="navDlCount" hidden>0</span>
+      </a>
+      <a class="nav-item" href="#/settings" data-view="settings">
+        <svg class="i"><use href="#i-sliders"/></svg>
+        <span data-i18n="nav_settings">Ayarlar</span>
+        <span class="nav-dot" id="navUpdateDot" hidden></span>
+      </a>
     </nav>
 
-    <div class="topnav-actions">
-      <div class="lang-switcher">
-        <button class="lang-btn" data-lang="tr">TR</button>
-        <button class="lang-btn" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="es">ES</button>
-      </div>
-      <span class="version-badge" id="versionBadge">yt-dlp</span>
-      <button class="btn-settings" id="btnSettings" data-i18n-title="btn_settings_title" title="Settings">
-        ⚙<span class="update-dot" id="updateDot" hidden></span>
-      </button>
-    </div>
-  </header>
+    <p class="sb-label" data-i18n="sb_platforms">Platformlar</p>
+    <div class="platform-list" id="platformList"></div>
 
-  <!-- ── BODY ── -->
-  <div class="body-layout">
+    <a class="folder-card" href="#/settings" id="folderCard">
+      <span class="folder-card-head">
+        <svg class="i"><use href="#i-folder"/></svg>
+        <span data-i18n="sb_saveto">Kayıt klasörü</span>
+        <span class="folder-card-change" data-i18n="sb_change">Değiştir</span>
+      </span>
+      <span class="folder-card-path mono" id="sbFolderPath">~/Downloads</span>
+    </a>
+  </aside>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+  <!-- ─────────── MAIN ─────────── -->
+  <div class="main">
+    <header class="topbar">
+      <nav class="topbar-nav" aria-label="Menu">
+        <a class="icon-btn" href="#/" data-view="home" aria-label="Keşfet" data-i18n-aria="nav_discover"><svg class="i"><use href="#i-search"/></svg></a>
+        <a class="icon-btn" href="#/downloads" data-view="downloads" aria-label="İndirmeler" data-i18n-aria="nav_downloads"><svg class="i"><use href="#i-download"/></svg></a>
+      </nav>
 
-      <div class="sb-section">
-        <button class="sb-item sb-active" data-i18n="nav_discover">Keşfet</button>
-      </div>
-
-      <div class="sb-section">
-        <p class="sb-label" data-i18n="sb_platforms">Platformlar</p>
-        <button class="sb-item platform-item" data-name="YouTube" data-url="youtube.com,youtu.be">
-          <span class="sb-dot" style="--c:#ff2d2d"></span> YouTube
-        </button>
-        <button class="sb-item platform-item" data-name="SoundCloud" data-url="soundcloud.com">
-          <span class="sb-dot" style="--c:#ff5500"></span> SoundCloud
-        </button>
-        <button class="sb-item platform-item" data-name="Twitter/X" data-url="twitter.com,x.com">
-          <span class="sb-dot" style="--c:#1d9bf0"></span> Twitter / X
-        </button>
-        <button class="sb-item platform-item" data-name="Instagram" data-url="instagram.com">
-          <span class="sb-dot" style="--c:#e1306c"></span> Instagram
-        </button>
-        <button class="sb-item platform-item" data-name="TikTok" data-url="tiktok.com,vm.tiktok.com">
-          <span class="sb-dot" style="--c:#69c9d0"></span> TikTok
-        </button>
-        <button class="sb-item platform-item" data-name="Vimeo" data-url="vimeo.com">
-          <span class="sb-dot" style="--c:#1ab7ea"></span> Vimeo
-        </button>
-        <button class="sb-item platform-item" data-name="Twitch" data-url="twitch.tv">
-          <span class="sb-dot" style="--c:#9147ff"></span> Twitch
-        </button>
+      <div class="server-pill" id="serverPill" role="status">
+        <span class="server-dot"></span>
+        <span id="serverText" data-i18n="status_connecting">Bağlanıyor…</span>
+        <span class="server-ver mono" id="topVersion"></span>
       </div>
 
-      <div class="sb-section">
-        <p class="sb-label" data-i18n="sb_format">Format</p>
-        <button class="sb-item sb-format-hint" data-type="audio">
-          <span class="sb-dot" style="--c:#3558E8"></span> <span data-i18n="fmt_audio_hint">MP3 — Ses</span>
-        </button>
-        <button class="sb-item sb-format-hint" data-type="video">
-          <span class="sb-dot" style="--c:#7c3aed"></span> <span data-i18n="fmt_video_hint">MP4 — Video</span>
-        </button>
+      <div class="topbar-right">
+        <div class="seg seg-sm" role="group" aria-label="Tema" data-i18n-aria="set_theme">
+          <button class="seg-btn" data-theme-set="dark"><svg class="i"><use href="#i-moon"/></svg><span data-i18n="theme_dark">Koyu</span></button>
+          <button class="seg-btn" data-theme-set="light"><svg class="i"><use href="#i-sun"/></svg><span data-i18n="theme_light">Açık</span></button>
+        </div>
+        <div class="lang-switch" role="group" aria-label="Dil" data-i18n-aria="set_lang">
+          <button class="lang-btn" data-lang="tr">TR</button>
+          <button class="lang-btn" data-lang="en">EN</button>
+          <button class="lang-btn" data-lang="es">ES</button>
+        </div>
+        <a class="icon-btn has-dot" href="#/settings" aria-label="Ayarlar" data-i18n-aria="nav_settings">
+          <svg class="i"><use href="#i-sliders"/></svg>
+          <span class="nav-dot" id="topUpdateDot" hidden></span>
+        </a>
       </div>
+    </header>
 
-      <div class="sb-section sb-history">
-        <div class="sb-label-row">
-          <p class="sb-label" data-i18n="sb_history">Son İndirmeler</p>
-          <button class="sb-clear-btn" id="btnClearHistory" title="✕"></button>
-        </div>
-        <div id="historyList" class="hist-list">
-          <div class="hist-empty" data-i18n="hist_empty">Henüz indirme yok</div>
-        </div>
-      </div>
+    <main class="views">
 
-      <div class="sb-section sb-bottom">
-        <p class="sb-label" data-i18n="sb_saveto">Kayıt Yeri</p>
-        <div class="sb-dir-wrap">
-          <input type="text" id="outputDir" class="sb-dir-input" placeholder="~/Downloads">
-          <button class="sb-dir-default" id="btnDefaultDir" title="↺">↺</button>
-        </div>
-      </div>
+      <!-- ═════════ HOME / DISCOVER ═════════ -->
+      <section class="view" id="view-home" data-view-panel="home">
+        <div class="home">
 
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main-content">
-
-      <!-- Hero -->
-      <section class="hero">
-        <div class="hero-meta">
-          <span class="hero-meta-dot"></span>
-          <span data-i18n="hero_meta_sites">1.000+ site desteklenir</span>
-          <span class="hero-meta-sep">·</span>
-          <span id="heroFfmpegStatus" data-i18n="hero_meta_ffmpeg">ffmpeg birleştirme aktif</span>
-        </div>
-
-        <h1 class="hero-heading"><span data-i18n="hero_h1">Müzik &amp; Video</span><br><span data-i18n="hero_h2">İndirin.</span></h1>
-        <p class="hero-sub">
-          <span data-i18n="hero_sub_1">YouTube, SoundCloud, Instagram ve daha fazlasından</span><br>
-          <span data-i18n="hero_sub_2">yüksek kalite, tek tıkla.</span>
-        </p>
-
-        <div class="url-stage" id="urlStage">
-          <input
-            type="text"
-            id="urlInput"
-            class="url-input"
-            data-i18n-placeholder="url_placeholder"
-            placeholder="URL yapıştırın — YouTube, SoundCloud, Twitter/X, Instagram…"
-            autocomplete="off"
-            spellcheck="false"
-          >
-          <button class="url-paste-btn" id="btnPaste" data-i18n-title="btn_paste_title" title="Panodan yapıştır">📋</button>
-          <button class="url-analyze-btn" id="btnAnalyze">
-            <span class="btn-text" data-i18n="btn_analyze">Analiz Et</span>
-            <span class="btn-spinner" hidden>↻</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- Info Panel (hidden until URL analyzed) -->
-      <section class="info-panel" id="infoCard" hidden>
-        <div class="playlist-banner" id="playlistBanner" hidden>
-          <span class="playlist-icon">📃</span>
-          <span id="playlistText"></span>
-        </div>
-        <div class="info-video-row">
-          <img class="info-thumb" id="thumbnail" src="" alt="">
-          <div class="info-meta">
-            <h2 class="info-title" id="videoTitle"></h2>
-            <p class="info-channel" id="videoUploader"></p>
-            <p class="info-dur" id="videoDuration"></p>
+          <div class="hero">
+            <div class="hero-badge">
+              <svg class="i"><use href="#i-check"/></svg>
+              <span data-i18n="hero_badge">1.000+ site destekleniyor</span>
+              <span class="hero-badge-sep">·</span>
+              <span id="heroFfmpeg" data-i18n="meta_ffmpeg_on">ffmpeg aktif</span>
+            </div>
+            <h1 class="hero-title">
+              <span data-i18n="hero_h1">Müzik &amp; video,</span><br>
+              <span class="accent" data-i18n="hero_h2">tek bağlantıyla.</span>
+            </h1>
+            <p class="hero-sub" data-i18n="hero_sub">Bağlantıyı yapıştır, formatı seç, indir. Her şey bilgisayarında çalışır — hesap yok, bulut yok, iz bırakılmaz.</p>
           </div>
-        </div>
 
-        <div class="format-section">
-          <div class="format-tabs">
-            <button class="fmt-tab active" data-type="audio" data-i18n="tab_audio">🎵 Müzik (MP3)</button>
-            <button class="fmt-tab" data-type="video" data-i18n="tab_video">🎬 Video (MP4)</button>
-          </div>
-          <div class="format-grid" id="formatGrid"></div>
-
-          <label class="editor-toggle" id="editorOption" hidden>
-            <input type="checkbox" id="chkSeparateAudio">
-            <span class="editor-toggle-body">
-              <strong data-i18n="editor_strong">Editörler için</strong><span data-i18n="editor_desc"> — Ses ve videoyu ayrı dosya olarak indir</span>
-              <em id="editorAudioLabel">Video + Ses (WAV)</em>
+          <!-- URL field -->
+          <div class="url-field" id="urlField">
+            <span class="url-lead" id="urlLead">
+              <svg class="i"><use href="#i-link"/></svg>
             </span>
-          </label>
-        </div>
+            <span class="url-chip" id="urlChip" hidden>
+              <span class="pbadge" id="urlChipBadge"></span>
+              <span id="urlChipName"></span>
+            </span>
+            <input type="text" id="urlInput" class="url-input" autocomplete="off" spellcheck="false"
+                   placeholder="https://www.youtube.com/watch?v=…" data-i18n-placeholder="url_placeholder"
+                   aria-label="URL" aria-describedby="urlStatus">
+            <button class="icon-btn ghost" id="btnClear" hidden aria-label="Temizle" data-i18n-aria="btn_clear_title"><svg class="i"><use href="#i-x"/></svg></button>
+            <button class="icon-btn ghost" id="btnPaste" aria-label="Panodan yapıştır" data-i18n-aria="btn_paste_title" data-i18n-title="btn_paste_title"><svg class="i"><use href="#i-paste"/></svg></button>
+            <button class="btn btn-primary btn-analyze" id="btnAnalyze">
+              <svg class="i spin" hidden><use href="#i-spinner"/></svg>
+              <span data-i18n="btn_analyze">Analiz et</span>
+              <svg class="i arrow"><use href="#i-arrow-right"/></svg>
+            </button>
+          </div>
 
-        <button class="btn-download" id="btnDownload" disabled data-i18n="btn_download">⬇ İndir</button>
+          <div class="url-status" id="urlStatus" aria-live="polite">
+            <span class="st st-hint" id="stHint"><kbd>Ctrl</kbd><kbd>V</kbd> <span data-i18n="hint_paste">ile yapıştır ya da bir platform seç</span></span>
+          </div>
+
+          <div class="chips" id="platformChips"></div>
+
+          <div class="trust">
+            <span><svg class="i"><use href="#i-shield"/></svg><span data-i18n="trust_local">Yerel çalışır</span></span>
+            <span><svg class="i"><use href="#i-user-x"/></svg><span data-i18n="trust_noaccount">Hesap gerekmez</span></span>
+            <span><svg class="i"><use href="#i-code"/></svg><span data-i18n="trust_opensource">Reklamsız &amp; açık kaynak</span></span>
+          </div>
+
+          <!-- Result panel -->
+          <section class="result" id="result" hidden aria-labelledby="resTitle">
+            <div class="result-top">
+              <button class="btn btn-quiet" id="btnNewLink">
+                <svg class="i"><use href="#i-arrow-left"/></svg>
+                <span data-i18n="res_new">Yeni bağlantı</span>
+              </button>
+              <a class="link-muted" href="#/settings" data-i18n="set_defaults_link">Varsayılanları ayarla</a>
+            </div>
+
+            <div class="playlist" id="playlistBanner" hidden>
+              <svg class="i"><use href="#i-list"/></svg>
+              <span id="playlistText"></span>
+            </div>
+
+            <div class="media">
+              <div class="media-thumb" id="mediaThumb">
+                <img id="thumbImg" alt="" hidden>
+                <span class="media-thumb-fallback"><svg class="i fill"><use href="#i-play"/></svg></span>
+                <span class="pbadge media-thumb-badge" id="thumbBadge" hidden></span>
+                <span class="media-dur mono" id="mediaDur" hidden></span>
+              </div>
+              <div class="media-info">
+                <h2 class="media-title" id="resTitle"></h2>
+                <div class="media-meta">
+                  <span id="mediaUploaderWrap" hidden><svg class="i"><use href="#i-user"/></svg><span id="mediaUploader"></span></span>
+                  <span id="mediaDurWrap" hidden><svg class="i"><use href="#i-clock"/></svg><span id="mediaDurText"></span></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabs" role="tablist">
+              <button class="tab" role="tab" data-type="audio"><svg class="i"><use href="#i-music"/></svg><span data-i18n="tab_audio">Ses</span></button>
+              <button class="tab" role="tab" data-type="video"><svg class="i"><use href="#i-video"/></svg><span data-i18n="tab_video">Video</span></button>
+            </div>
+
+            <div class="formats" id="formatGrid" role="radiogroup"></div>
+
+            <div class="out-card">
+              <label class="check" id="sepOption" hidden>
+                <input type="checkbox" id="chkSeparate">
+                <span>
+                  <span class="check-title" data-i18n="sep_label">Ses ve videoyu ayrı dosya olarak kaydet</span>
+                  <span class="check-sub" id="sepSub"></span>
+                </span>
+              </label>
+              <div class="out-row">
+                <div class="out-path">
+                  <span class="out-label" data-i18n="out_label">Kaydedilecek</span>
+                  <span class="out-file mono" id="outFile"></span>
+                </div>
+                <button class="btn btn-primary btn-lg" id="btnDownload" disabled>
+                  <svg class="i"><use href="#i-download"/></svg>
+                  <span data-i18n="btn_download">İndir</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Recent -->
+          <section class="recent" id="recent" hidden>
+            <div class="section-head">
+              <span class="eyebrow" data-i18n="recent_title">Son indirilenler</span>
+              <a class="link-muted" href="#/downloads"><span data-i18n="see_all">Tümünü gör</span> <svg class="i"><use href="#i-arrow-right"/></svg></a>
+            </div>
+            <div class="recent-grid" id="recentGrid"></div>
+          </section>
+        </div>
       </section>
 
-      <!-- Downloads -->
-      <section class="dl-section" id="downloadsSection" hidden>
-        <div class="dl-section-head">
-          <h2 class="dl-section-title" data-i18n="dl_section_title">İndirmeler</h2>
+      <!-- ═════════ DOWNLOADS ═════════ -->
+      <section class="view" id="view-downloads" data-view-panel="downloads" hidden>
+        <div class="page">
+          <div class="page-head">
+            <h2 class="page-title" data-i18n="dl_title">İndirmeler</h2>
+            <span class="pill pill-accent mono" id="dlActivePill" hidden></span>
+            <div class="page-actions">
+              <button class="btn btn-quiet" id="btnOpenFolder"><svg class="i"><use href="#i-folder"/></svg><span data-i18n="dl_open_folder">Klasörü aç</span></button>
+              <button class="btn btn-quiet" id="btnClearDone" hidden><svg class="i"><use href="#i-check"/></svg><span data-i18n="dl_clear_done">Bitenleri kaldır</span></button>
+            </div>
+          </div>
+
+          <p class="eyebrow" data-i18n="dl_session">Bu oturum</p>
+          <div class="dl-list" id="dlList"></div>
+          <div class="empty" id="dlEmpty">
+            <svg class="i"><use href="#i-download"/></svg>
+            <span data-i18n="dl_empty">Bu oturumda henüz indirme yok.</span>
+            <a class="btn btn-primary btn-sm" href="#/" data-i18n="dl_empty_cta">Bağlantı analiz et</a>
+          </div>
+
+          <div class="section-head section-head-gap">
+            <span class="eyebrow"><span data-i18n="dl_history">Geçmiş</span> <span class="eyebrow-count mono" id="histCount"></span></span>
+            <button class="btn btn-quiet btn-sm" id="btnClearHistory"><svg class="i"><use href="#i-trash"/></svg><span data-i18n="dl_clear_history">Geçmişi temizle</span></button>
+          </div>
+          <div class="hist-list" id="histList"></div>
+          <p class="hist-empty" id="histEmpty" hidden data-i18n="hist_empty">Geçmiş boş — indirdiğin dosyalar burada listelenir.</p>
         </div>
-        <div class="dl-list" id="downloadList"></div>
+      </section>
+
+      <!-- ═════════ SETTINGS ═════════ -->
+      <section class="view" id="view-settings" data-view-panel="settings" hidden>
+        <div class="page page-wide">
+          <div class="page-head">
+            <h2 class="page-title" data-i18n="set_title">Ayarlar</h2>
+            <span class="page-note"><svg class="i"><use href="#i-check"/></svg><span data-i18n="set_autosave">Değişiklikler otomatik kaydedilir</span></span>
+          </div>
+
+          <div class="settings-grid">
+            <div class="col">
+
+              <!-- Engine -->
+              <section class="card">
+                <h3 class="card-title" data-i18n="set_engine">Motor</h3>
+                <p class="card-sub" data-i18n="set_engine_sub">İndirmeleri yapan araçlar ve güncellemeleri</p>
+
+                <div class="tool-row">
+                  <span class="tool-icon"><svg class="i"><use href="#i-terminal"/></svg></span>
+                  <span class="tool-body">
+                    <span class="tool-name">yt-dlp <span class="mono tool-ver" id="setYtVer">—</span></span>
+                    <span class="tag" id="verChip" hidden></span>
+                  </span>
+                  <button class="btn btn-primary btn-sm" id="btnCheckUpdate">
+                    <svg class="i spin" hidden><use href="#i-spinner"/></svg>
+                    <span id="btnCheckUpdateText" data-i18n="btn_check">Güncellemeleri denetle</span>
+                  </button>
+                  <button class="btn btn-amber btn-sm" id="btnInstallUpdate" hidden>
+                    <svg class="i"><use href="#i-download"/></svg>
+                    <span id="btnInstallText"></span>
+                  </button>
+                </div>
+                <div class="progress progress-thin" id="updProgress" hidden><div class="progress-fill amber" id="updProgressFill"></div></div>
+
+                <div class="tool-row">
+                  <span class="tool-icon amber"><svg class="i"><use href="#i-wave"/></svg></span>
+                  <span class="tool-body">
+                    <span class="tool-name">FFmpeg</span>
+                    <span class="tool-sub" data-i18n="ffmpeg_sub">Ses çıkarma ve birleştirme için</span>
+                  </span>
+                  <span class="tag" id="ffmpegTag">—</span>
+                </div>
+
+                <div class="switch-row">
+                  <span>
+                    <span class="switch-title" data-i18n="set_auto_update">Açılışta güncellemeleri otomatik denetle</span>
+                    <span class="switch-sub" data-i18n="set_auto_update_sub">Siteler değiştikçe yt-dlp'nin güncel kalması önemlidir</span>
+                  </span>
+                  <button class="switch" role="switch" aria-checked="false" id="swAutoUpdate" aria-label="Auto update"></button>
+                </div>
+
+                <pre class="log" id="updLog" hidden></pre>
+                <p class="fine-print" data-i18n="privacy_note">Güncellemeler doğrudan github.com/yt-dlp adresine bağlanır — aracı sunucu yok. Dosya değiştirilmeden önce SHA256 ile doğrulanır.</p>
+              </section>
+
+              <!-- Appearance -->
+              <section class="card">
+                <h3 class="card-title" data-i18n="set_appearance">Görünüm &amp; dil</h3>
+                <div class="field-row">
+                  <span class="field-label" data-i18n="set_theme">Tema</span>
+                  <div class="seg seg-fill" role="group">
+                    <button class="seg-btn" data-theme-set="dark" data-i18n="theme_dark">Koyu</button>
+                    <button class="seg-btn" data-theme-set="light" data-i18n="theme_light">Açık</button>
+                    <button class="seg-btn" data-theme-set="system" data-i18n="theme_system">Sistem</button>
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-label" data-i18n="set_lang">Dil</span>
+                  <div class="seg seg-fill" role="group">
+                    <button class="seg-btn lang-btn" data-lang="tr">Türkçe</button>
+                    <button class="seg-btn lang-btn" data-lang="en">English</button>
+                    <button class="seg-btn lang-btn" data-lang="es">Español</button>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div class="col">
+              <!-- Defaults -->
+              <section class="card">
+                <h3 class="card-title" data-i18n="set_defaults">İndirme varsayılanları</h3>
+                <p class="card-sub" data-i18n="set_defaults_sub">Analiz ekranında önceden seçili gelir</p>
+
+                <span class="field-label block" data-i18n="set_audio_q">Ses kalitesi</span>
+                <div class="seg seg-fill" role="group" id="segAudioQ">
+                  <button class="seg-btn" data-q="mp3-320">320 kbps</button>
+                  <button class="seg-btn" data-q="mp3-192">192 kbps</button>
+                  <button class="seg-btn" data-q="mp3-128">128 kbps</button>
+                </div>
+
+                <span class="field-label block" data-i18n="set_video_q">Video kalitesi</span>
+                <div class="seg seg-fill" role="group" id="segVideoQ">
+                  <button class="seg-btn" data-q="mp4-2160">4K</button>
+                  <button class="seg-btn" data-q="mp4-1440">1440p</button>
+                  <button class="seg-btn" data-q="mp4-1080">1080p</button>
+                  <button class="seg-btn" data-q="mp4-720">720p</button>
+                  <button class="seg-btn" data-q="mp4-480">480p</button>
+                  <button class="seg-btn" data-q="mp4-360">360p</button>
+                </div>
+
+                <label class="field-label block" for="outputDir" data-i18n="set_folder">Kayıt klasörü</label>
+                <div class="input-row">
+                  <div class="input-wrap">
+                    <svg class="i"><use href="#i-folder"/></svg>
+                    <input type="text" id="outputDir" class="input mono" spellcheck="false" autocomplete="off">
+                  </div>
+                  <button class="btn btn-quiet" id="btnDefaultDir" data-i18n="set_folder_default">Varsayılan</button>
+                  <button class="btn btn-quiet" id="btnOpenDir" data-i18n="set_folder_open">Aç</button>
+                </div>
+                <p class="fine-print" data-i18n="set_folder_hint">Tam klasör yolunu yaz. Klasör yoksa ilk indirmede oluşturulur.</p>
+              </section>
+
+              <!-- Behaviour -->
+              <section class="card">
+                <h3 class="card-title" data-i18n="set_behavior">Davranış</h3>
+                <div class="switch-row">
+                  <span>
+                    <span class="switch-title" data-i18n="set_notify">Masaüstü bildirimleri</span>
+                    <span class="switch-sub" id="notifySub" data-i18n="set_notify_sub">İndirme bitince sistem bildirimi göster</span>
+                  </span>
+                  <button class="switch" role="switch" aria-checked="false" id="swNotify"></button>
+                </div>
+                <div class="switch-row" id="rowAutoFetch" hidden>
+                  <span>
+                    <span class="switch-title" data-i18n="set_autofetch">Bitince bilgisayarıma indir</span>
+                    <span class="switch-sub" data-i18n="set_autofetch_sub">Dosya sunucuda hazırlanır, biter bitmez tarayıcına iner</span>
+                  </span>
+                  <button class="switch" role="switch" aria-checked="false" id="swAutoFetch"></button>
+                </div>
+                <div class="switch-row">
+                  <span>
+                    <span class="switch-title" data-i18n="set_autopaste">Yapıştırınca otomatik analiz et</span>
+                    <span class="switch-sub" data-i18n="set_autopaste_sub">Bağlantıyı yapıştırdığın anda bilgileri getir</span>
+                  </span>
+                  <button class="switch" role="switch" aria-checked="false" id="swAutoPaste"></button>
+                </div>
+                <div class="switch-row">
+                  <span>
+                    <span class="switch-title" data-i18n="set_separate">Ses ve videoyu ayrı kaydet</span>
+                    <span class="switch-sub" data-i18n="set_separate_sub">Video indirmelerinde bu seçenek işaretli gelir</span>
+                  </span>
+                  <button class="switch" role="switch" aria-checked="false" id="swSeparate"></button>
+                </div>
+              </section>
+
+              <!-- Access keys — only the owner key sees this -->
+              <section class="card" id="cardKeys" hidden>
+                <h3 class="card-title" data-i18n="set_keys">Erişim anahtarları</h3>
+                <p class="fine-print" data-i18n="set_keys_hint">Her kişiye ayrı bir anahtar ver. Birini iptal etmek diğerlerini etkilemez.</p>
+                <div class="input-row">
+                  <div class="input-wrap">
+                    <svg class="i"><use href="#i-user"/></svg>
+                    <input type="text" id="keyName" class="input" maxlength="60" autocomplete="off" placeholder="Ad">
+                  </div>
+                  <button class="btn btn-primary" id="btnAddKey" data-i18n="set_keys_add">Oluştur</button>
+                </div>
+                <div class="key-list" id="keyList"></div>
+              </section>
+            </div>
+          </div>
+        </div>
       </section>
 
     </main>
   </div>
 </div>
 
-<!-- Settings Modal -->
-<div class="modal-backdrop" id="settingsModal" hidden>
-  <div class="modal settings-modal">
-    <div class="modal-head">
-      <span data-i18n="settings_title">Settings</span>
-      <button id="btnCloseSettings">✕</button>
-    </div>
-    <div class="settings-body">
-
-      <div class="settings-section">
-        <p class="settings-section-label" data-i18n="settings_updates">yt-dlp Updates</p>
-
-        <div class="version-info-row">
-          <div class="version-col">
-            <span class="ver-label" data-i18n="version_current">Current</span>
-            <span class="ver-val" id="settingCurrentVer">—</span>
-          </div>
-          <div class="version-col" id="latestVerCol" hidden>
-            <span class="ver-label" data-i18n="version_latest">Latest</span>
-            <span class="ver-val ver-new" id="settingLatestVer">—</span>
-          </div>
-          <span class="ver-badge-ok" id="verUpToDate" hidden data-i18n="version_up_to_date">✓ Up to date</span>
-        </div>
-
-        <div class="update-actions">
-          <button class="btn-check-update" id="btnCheckUpdate">
-            <span class="btn-text" data-i18n="btn_check_updates">Check for Updates</span>
-            <span class="btn-spinner" hidden>↻</span>
-          </button>
-          <button class="btn-install-update" id="btnInstallUpdate" hidden data-i18n="btn_install_update">⬇ Install Update</button>
-        </div>
-
-        <label class="setting-row">
-          <span class="setting-label" data-i18n="setting_auto_update">Automatically check for updates on startup</span>
-          <span class="toggle">
-            <input type="checkbox" id="settingAutoUpdate">
-            <span class="toggle-track"></span>
-          </span>
-        </label>
-
-        <p class="settings-privacy-note" data-i18n="settings_privacy_note">Updates connect directly to github.com/yt-dlp — no intermediary server. Binary is verified with SHA256 before replacing.</p>
-      </div>
-
-      <div class="update-log-wrap" id="updateLogWrap" hidden>
-        <div class="update-progress-track" id="updateProgressTrack" hidden>
-          <div class="update-progress-fill" id="updateProgressFill" style="width:0%"></div>
-        </div>
-        <pre class="log-area" id="updateLogArea"></pre>
-      </div>
-
-    </div>
-  </div>
-</div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script src="app.js"></script>
 </body>

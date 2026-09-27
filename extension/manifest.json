@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "MediaFetch",
-  "version": "1.0.0",
-  "description": "Download music & video from YouTube, TikTok, Instagram and 1000+ sites",
+  "version": "1.2.0",
+  "description": "Download music & video from YouTube, TikTok, Instagram and 1000+ sites — via a local or a self-hosted MediaFetch server",
   "action": {
     "default_popup": "popup.html",
     "default_title": "MediaFetch — music & video",
@@ -12,9 +12,34 @@
       "128": "icons/icon128.png"
     }
   },
-  "permissions": ["activeTab", "tabs", "storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["activeTab", "tabs", "storage", "downloads", "notifications"],
   "host_permissions": [
     "http://localhost:3434/*",
-    "http://127.0.0.1:3434/*"
-  ]
+    "http://127.0.0.1:3434/*",
+    "http://localhost:8422/*",
+    "http://127.0.0.1:8422/*",
+    "http://SUNUCU_IP/*",
+    "http://SUNUCU_IP:8422/*"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "content_scripts": [{
+    "matches": [
+      "*://www.youtube.com/*",
+      "*://youtu.be/*",
+      "*://soundcloud.com/*/*",
+      "*://twitter.com/*",
+      "*://x.com/*",
+      "*://www.tiktok.com/*",
+      "*://www.instagram.com/*",
+      "*://vimeo.com/*"
+    ],
+    "js": ["content.js"],
+    "run_at": "document_idle"
+  }]
 }

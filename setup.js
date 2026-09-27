@@ -2,9 +2,18 @@ const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const YT_DLP_URL = 'https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe';
+// Pick the release asset that matches this machine. On a Linux server prefer
+// scripts/install-linux.sh instead — that one also fetches ffmpeg.
+const IS_WIN = process.platform === 'win32';
+const ASSET = IS_WIN ? 'yt-dlp.exe'
+  : process.platform === 'darwin' ? 'yt-dlp_macos'
+  : process.arch === 'arm64' ? 'yt-dlp_linux_aarch64'
+  : process.arch === 'arm' ? 'yt-dlp_linux_armv7l'
+  : 'yt-dlp_linux';
+
+const YT_DLP_URL = `https://github.com/yt-dlp/yt-dlp/releases/latest/download/${ASSET}`;
 const BIN_DIR = path.join(__dirname, 'bin');
-const YT_DLP_PATH = path.join(BIN_DIR, 'yt-dlp.exe');
+const YT_DLP_PATH = path.join(BIN_DIR, IS_WIN ? 'yt-dlp.exe' : 'yt-dlp');
 
 function download(url, dest, redirectCount = 0) {
   if (redirectCount > 10) {
@@ -65,6 +74,7 @@ async function main() {
     console.log('Downloading yt-dlp...');
     try {
       await download(YT_DLP_URL, YT_DLP_PATH);
+      if (!IS_WIN) fs.chmodSync(YT_DLP_PATH, 0o755);
       console.log('yt-dlp installed successfully.');
     } catch (err) {
       console.error('Failed to download yt-dlp:', err.message);
@@ -74,7 +84,8 @@ async function main() {
 
   console.log('\nSetup complete!');
   console.log('Run: node server.js');
-  console.log('Or double-click start.bat');
+  console.log(IS_WIN ? 'Or double-click start.bat'
+    : 'For a server deployment run: sh scripts/install-linux.sh');
 }
 
 main();

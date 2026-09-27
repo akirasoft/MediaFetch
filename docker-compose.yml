@@ -1,0 +1,24 @@
+# MediaFetch — docker compose
+#   cp .env.example .env && nano .env
+#   docker compose up -d
+services:
+  mediafetch:
+    build: .
+    image: mediafetch:latest
+    container_name: mediafetch
+    restart: unless-stopped
+    ports:
+      # Dışarıya açılan port. nginx arkasına alacaksan "127.0.0.1:8422:8422" yap.
+      - "8422:8422"
+    environment:
+      MEDIAFETCH_MODE: server
+      MEDIAFETCH_HOST: 0.0.0.0
+      MEDIAFETCH_PORT: "8422"
+      MEDIAFETCH_TOKEN: "${MEDIAFETCH_TOKEN:?MEDIAFETCH_TOKEN .env icinde tanimlanmali}"
+      MEDIAFETCH_PUBLIC_URL: "${MEDIAFETCH_PUBLIC_URL:-}"
+      MEDIAFETCH_RETENTION_MIN: "${MEDIAFETCH_RETENTION_MIN:-1440}"
+    volumes:
+      - mediafetch-downloads:/app/downloads
+
+volumes:
+  mediafetch-downloads:

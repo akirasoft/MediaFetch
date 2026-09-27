@@ -25,5 +25,32 @@ desktop.ini
 
 # IDE / tooling
 .claude/
+.omc/
 .vscode/
 .idea/
+
+# yt-dlp / ffmpeg binaries (installed by setup.js or scripts/install-linux.sh)
+bin/yt-dlp
+bin/ffmpeg
+bin/ffprobe
+bin/*.download
+bin/*.bak
+
+# Local runtime settings
+settings.json
+
+# Ad-hoc backups
+*.bak
+server.js.bak*
+server.js.*.bak*
+
+# Server credentials (local only)
+SUNUCU-BILGILERI.txt
+mediafetch-server*.zip
+
+# Per-person access keys (contains secrets)
+keys.json
+keys.json.tmp
+.tunnel-url
+.tunnel.log
+.env.server

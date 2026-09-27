@@ -12,6 +12,11 @@
 
 ---
 
+> 🖥️ **¿Quieres alojarlo tú mismo?** La aplicación ya funciona en Ubuntu /
+> Docker / Pterodactyl, y la extensión de Chrome puede apuntar a ese servidor
+> remoto y descargar el archivo terminado a tu equipo. Guía paso a paso (turco):
+> **[KURULUM-SUNUCU.md](KURULUM-SUNUCU.md)**
+
 > ⚠️ **Aviso Legal:** Esta herramienta está destinada al contenido que tienes derecho a descargar — dominio público, material con licencia Creative Commons o contenido donde el titular de los derechos otorga permiso. La descarga de material protegido por derechos de autor sin autorización puede violar los Términos de Servicio de la plataforma y la legislación de derechos de autor aplicable. **Eres el único responsable del uso que hagas de este software.** El autor proporciona esta herramienta tal cual y no acepta ninguna responsabilidad por usos indebidos.
 
 ## Características

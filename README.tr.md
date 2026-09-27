@@ -6,11 +6,16 @@
 
 ![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=nodedotjs&logoColor=white)
 ![Lisans](https://img.shields.io/badge/lisans-MIT-blue)
-![Platform](https://img.shields.io/badge/platform-Windows-0078D4?logo=windows)
+![Platform](https://img.shields.io/badge/platform-Windows%20%C2%B7%20Linux%20%C2%B7%20macOS-0078D4)
 ![yt-dlp](https://img.shields.io/badge/powered%20by-yt--dlp-FF0000)
 [![Yapımcı](https://img.shields.io/badge/yap%C4%B1mc%C4%B1-OuzK-orange)](https://github.com/akirasoft)
 
 ---
+
+> 🖥️ **Sunucuda çalıştırmak mı istiyorsun?** Uygulama artık Ubuntu / Docker /
+> Pterodactyl üzerinde de çalışıyor; Chrome eklentisi uzaktaki sunucuya bağlanıp
+> biten dosyayı bilgisayarına indiriyor. Adım adım anlatım:
+> **[KURULUM-SUNUCU.md](KURULUM-SUNUCU.md)**
 
 > ⚠️ **Yasal Uyarı:** Bu araç yalnızca indirme hakkına sahip olduğunuz içerikler için tasarlanmıştır — kamu malı, Creative Commons lisanslı içerikler veya telif hakkı sahibinin izin verdiği materyaller. Telif hakkıyla korunan içeriklerin yetkisiz indirilmesi, platformun Kullanım Koşulları'nı ve geçerli telif hakkı mevzuatını ihlal edebilir. **Bu yazılımı nasıl kullandığınızdan yalnızca siz sorumlusunuz.** Yapımcı bu aracı olduğu gibi sunar; kötüye kullanımdan doğacak hiçbir sorumluluk kabul edilmez.
 

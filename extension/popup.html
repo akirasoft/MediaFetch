@@ -20,9 +20,42 @@
         <button class="lang-btn" data-lang="en">EN</button>
         <button class="lang-btn" data-lang="es">ES</button>
       </div>
+      <button class="gear-btn" id="btnSettings" title="" aria-label="Settings">
+        <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true">
+          <path fill="currentColor" d="M8 5.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zm0 1.3a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
+          <path fill="currentColor" d="M7.1 1h1.8l.25 1.6c.4.12.78.28 1.13.49l1.32-.95 1.27 1.27-.95 1.32c.2.35.37.73.48 1.13L14 6.1v1.8l-1.6.25c-.11.4-.27.78-.48 1.13l.95 1.32-1.27 1.27-1.32-.95c-.35.2-.73.37-1.13.48L8.9 15H7.1l-.25-1.6a4.8 4.8 0 01-1.13-.48l-1.32.95L3.13 12.6l.95-1.32a4.8 4.8 0 01-.48-1.13L2 9.9V8.1l1.6-.25c.11-.4.27-.78.48-1.13L3.13 5.4 4.4 4.13l1.32.95c.35-.2.73-.37 1.13-.48L7.1 1z" opacity=".55"/>
+        </svg>
+      </button>
       <span class="srv-dot" id="srvDot" title=""></span>
     </div>
   </header>
+
+  <!-- ── Sunucu ayarları ── -->
+  <section class="settings" id="settings" hidden>
+    <div class="set-row">
+      <label class="set-label" for="inpServer" data-i18n="srvUrlLabel"></label>
+      <input type="text" id="inpServer" class="set-input" spellcheck="false"
+             placeholder="http://SUNUCU_IP:8422">
+    </div>
+    <div class="set-presets">
+      <button class="chip" id="presetLocal" data-i18n="presetLocal"></button>
+      <button class="chip" id="presetRemote" data-i18n="presetRemote"></button>
+    </div>
+    <div class="set-row">
+      <label class="set-label" for="inpToken" data-i18n="tokenLabel"></label>
+      <input type="password" id="inpToken" class="set-input" spellcheck="false"
+             placeholder="MEDIAFETCH_TOKEN">
+    </div>
+    <label class="set-check">
+      <input type="checkbox" id="chkAutoSave" checked>
+      <span data-i18n="autoSaveLabel"></span>
+    </label>
+    <div class="set-actions">
+      <button class="btn-sm primary" id="btnSaveCfg" data-i18n="saveCfg"></button>
+      <button class="btn-sm" id="btnTestCfg" data-i18n="testCfg"></button>
+    </div>
+    <div class="set-msg" id="setMsg"></div>
+  </section>
 
   <div class="url-bar" id="urlBar"></div>
 
@@ -44,6 +77,7 @@
       <span id="progEta"></span>
     </div>
     <div class="prog-msg" id="progMsg"></div>
+    <button class="btn-sm link" id="btnSaveNow" hidden data-i18n="saveNow"></button>
   </div>
 
   <script src="popup.js"></script>
