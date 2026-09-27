@@ -995,7 +995,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '256kb' }));
 
 // Extension download — requires auth, streams extension/ folder as a zip
-app.get('/extension.zip', auth, (req, res) => {
+app.get('/extension.zip', (req, res) => {
   const archiver = require('archiver');
   const extDir = path.join(__dirname, 'extension');
   if (!fs.existsSync(extDir)) return res.status(404).json({ error: 'extension dir not found' });
