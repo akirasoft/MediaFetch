@@ -2,8 +2,11 @@
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
+> 🖥️ **This is the server / VPS edition** — install on Ubuntu, Docker, or Pterodactyl and share with friends. Each person gets their own access key; downloaded files go straight to their computer, nothing stays on the server.  
+> 💻 Just want it on your own Windows PC? → **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)**
+
 Download music & video from YouTube, TikTok, Instagram, SoundCloud, and 1,000+ sites.  
-Self-host it on your own VPS, give friends personal access keys — files go straight to **their** computer, nothing stays on the server.
+Self-host on your own VPS, give friends personal access keys — files go straight to **their** computer, nothing stays on the server.
 
 ---
 

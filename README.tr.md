@@ -2,6 +2,9 @@
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
+> 🖥️ **Bu sürüm sunucu / VPS içindir** — Ubuntu, Docker veya Pterodactyl'a kur, arkadaşlarınla paylaş. Her kişiye ayrı erişim anahtarı ver; indirilen dosyalar doğrudan onların bilgisayarına gider, sunucuda hiçbir şey kalmaz.  
+> 💻 Kendi Windows bilgisayarında yerel çalıştırmak istiyorsan → **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)**
+
 YouTube, TikTok, Instagram, SoundCloud ve 1000+ siteden müzik/video indirme aracı.  
 Kendi sunucuna (VPS/VDS) kurarsın, arkadaşlarına kişisel anahtar verirsin; indirilen dosyalar doğrudan onların bilgisayarına gider — sunucuda hiçbir şey kalmaz.
 

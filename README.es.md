@@ -2,6 +2,9 @@
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
+> 🖥️ **Esta es la edición servidor / VPS** — instálala en Ubuntu, Docker o Pterodactyl y compártela con amigos. Cada persona recibe su propia clave de acceso; los archivos van directamente a su ordenador, nada queda en el servidor.  
+> 💻 ¿Quieres ejecutarlo en tu propio PC con Windows? → **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)**
+
 Descarga música y vídeo de YouTube, TikTok, Instagram, SoundCloud y más de 1.000 sitios.  
 Instálalo en tu propio servidor (VPS), da claves de acceso personales a tus amigos — los archivos van directamente a **su** ordenador, nada queda en el servidor.
 
