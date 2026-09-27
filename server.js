@@ -994,6 +994,20 @@ if (TOKEN) {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '256kb' }));
 
+// Extension download — requires auth, streams extension/ folder as a zip
+app.get('/extension.zip', auth, (req, res) => {
+  const archiver = require('archiver');
+  const extDir = path.join(__dirname, 'extension');
+  if (!fs.existsSync(extDir)) return res.status(404).json({ error: 'extension dir not found' });
+  res.setHeader('Content-Type', 'application/zip');
+  res.setHeader('Content-Disposition', 'attachment; filename="mediafetch-extension.zip"');
+  const archive = archiver('zip', { zlib: { level: 6 } });
+  archive.on('error', err => { if (!res.headersSent) res.status(500).end(); });
+  archive.pipe(res);
+  archive.directory(extDir, 'mediafetch-extension');
+  archive.finalize();
+});
+
 // Default download directory
 app.get('/api/default-dir', (req, res) => {
   res.json({ dir: DEFAULT_DOWNLOAD_DIR, allowCustom: ALLOW_CUSTOM_DIR });
