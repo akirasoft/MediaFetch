@@ -2,11 +2,11 @@
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
-> 🖥️ **This is the server / VPS edition** — install on Ubuntu, Docker, or Pterodactyl and share with friends. Each person gets their own access key; downloaded files go straight to their computer, nothing stays on the server.  
+> 🖥️ **This is the server / VPS edition** — install on Ubuntu, Docker, or Pterodactyl and share with friends. Each person gets their own access key; transferred files are deleted from the server the moment the download completes in the browser.  
 > 💻 Just want it on your own Windows PC? → **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)**
 
 Download music & video from YouTube, TikTok, Instagram, SoundCloud, and 1,000+ sites.  
-Self-host on your own VPS, give friends personal access keys — files go straight to **their** computer, nothing stays on the server.
+Self-host on your own VPS, give friends personal access keys — transferred files are deleted from the server immediately after the browser receives them. Un-transferred files are swept after `MEDIAFETCH_RETENTION_MIN` minutes (`0` = sweep disabled, files stay indefinitely).
 
 ---
 
@@ -88,8 +88,10 @@ SERVER_PORT=8422
 # Public address of your server (use a subdomain if you have one)
 MEDIAFETCH_PUBLIC_URL=http://YOUR_SERVER_IP:8422
 
-# File retention in minutes — 0 = delete immediately after transfer
-MEDIAFETCH_RETENTION_MIN=0
+# How long un-transferred files are kept before auto-cleanup (minutes)
+# 0 = sweep disabled (transferred files are always deleted immediately on download)
+# Recommended: 1440 (24h) — auto-cleans any files the user never retrieved
+MEDIAFETCH_RETENTION_MIN=1440
 ```
 
 ### 5. Start
@@ -214,7 +216,7 @@ Twitter/X videos, SoundCloud, Vimeo, and 1,000+ sites supported by yt-dlp.
 | `MEDIAFETCH_TOKEN` | — | **Required** — owner password |
 | `SERVER_PORT` | `8422` | Port to listen on |
 | `MEDIAFETCH_PUBLIC_URL` | — | Publicly reachable address |
-| `MEDIAFETCH_RETENTION_MIN` | `0` | File retention (minutes), 0 = instant delete |
+| `MEDIAFETCH_RETENTION_MIN` | `1440` | Minutes before un-transferred files are swept; `0` = sweep disabled (transferred files always deleted immediately) |
 | `MEDIAFETCH_TUNNEL` | `0` | `1` = start Cloudflare tunnel |
 | `MEDIAFETCH_DOWNLOAD_DIR` | `downloads/` | Download directory |
 | `MEDIAFETCH_MODE` | auto | `server` or `local` |

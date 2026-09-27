@@ -1,6 +1,6 @@
 # Privacy Policy — MediaFetch
 
-MediaFetch is a **local application** that runs entirely on your computer. It does not have a central server, user accounts, tracking, analytics, or advertising.
+MediaFetch is a **self-hosted server application** you run on your own VPS or machine. It does not have a cloud service or central server operated by the author, and it does not have tracking, analytics, or advertising.
 
 ---
 
@@ -10,13 +10,13 @@ MediaFetch is a **local application** that runs entirely on your computer. It do
 - **When:** Every time you analyze a URL or download media.
 - **Where:** Directly to the platform you are downloading from (e.g. YouTube, TikTok, Instagram).
 - **What is sent:** The URL you provide. Your IP address is visible to the platform, as with any normal browser visit.
-- **Who controls this:** You. MediaFetch sends no data to any server of its own.
+- **Who controls this:** You. MediaFetch sends no data to any server operated by the author.
 
 ### 2. yt-dlp updates — github.com/yt-dlp/yt-dlp
 - **When:**
   - **Manual only (default):** Only when you click *Check for Updates* or *Install Update* in Settings.
   - **On startup (opt-in):** Only if you enable *Automatically check for updates on startup* in Settings. This setting is **off by default**.
-- **Where:** Directly to `api.github.com/repos/yt-dlp/yt-dlp/releases/latest` and GitHub's release CDN. **No MediaFetch server is involved.**
+- **Where:** Directly to `api.github.com/repos/yt-dlp/yt-dlp/releases/latest` and GitHub's release CDN. **No server operated by the author is involved.**
 - **What is sent:** A standard HTTPS request with a `User-Agent` header identifying MediaFetch. Your IP address is visible to GitHub/Fastly, the same as visiting github.com in your browser.
 - **Why:** To check the latest yt-dlp version and download the official binary.
 - **Verification:** The downloaded binary is verified against the official `SHA2-256SUMS` file published in the same GitHub release before replacing the existing binary.

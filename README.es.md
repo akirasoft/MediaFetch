@@ -2,11 +2,11 @@
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
-> 🖥️ **Esta es la edición servidor / VPS** — instálala en Ubuntu, Docker o Pterodactyl y compártela con amigos. Cada persona recibe su propia clave de acceso; los archivos van directamente a su ordenador, nada queda en el servidor.  
+> 🖥️ **Esta es la edición servidor / VPS** — instálala en Ubuntu, Docker o Pterodactyl y compártela con amigos. Cada persona recibe su propia clave de acceso; los archivos transferidos se eliminan del servidor en cuanto el navegador los recibe.  
 > 💻 ¿Quieres ejecutarlo en tu propio PC con Windows? → **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)**
 
 Descarga música y vídeo de YouTube, TikTok, Instagram, SoundCloud y más de 1.000 sitios.  
-Instálalo en tu propio servidor (VPS), da claves de acceso personales a tus amigos — los archivos van directamente a **su** ordenador, nada queda en el servidor.
+Instálalo en tu propio servidor (VPS), da claves de acceso personales a tus amigos — los archivos transferidos se eliminan del servidor inmediatamente. Los archivos no transferidos se limpian tras `MEDIAFETCH_RETENTION_MIN` minutos (`0` = limpieza automática desactivada, los archivos permanecen indefinidamente).
 
 ---
 
@@ -88,8 +88,10 @@ SERVER_PORT=8422
 # Dirección pública del servidor (usa un subdominio si tienes uno)
 MEDIAFETCH_PUBLIC_URL=http://TU_IP_DE_SERVIDOR:8422
 
-# Retención de archivos en minutos — 0 = borrar inmediatamente
-MEDIAFETCH_RETENTION_MIN=0
+# Tiempo que se conservan los archivos no transferidos (minutos)
+# 0 = limpieza automática desactivada (los archivos transferidos siempre se borran al instante)
+# Recomendado: 1440 (24h) — limpia automáticamente los archivos no descargados
+MEDIAFETCH_RETENTION_MIN=1440
 ```
 
 ### 5. Iniciar
@@ -214,7 +216,7 @@ vídeos de Twitter/X, SoundCloud, Vimeo y más de 1.000 sitios soportados por yt
 | `MEDIAFETCH_TOKEN` | — | **Obligatorio** — contraseña del propietario |
 | `SERVER_PORT` | `8422` | Puerto a escuchar |
 | `MEDIAFETCH_PUBLIC_URL` | — | Dirección accesible públicamente |
-| `MEDIAFETCH_RETENTION_MIN` | `0` | Retención de archivos (minutos), 0 = borrado inmediato |
+| `MEDIAFETCH_RETENTION_MIN` | `1440` | Minutos antes de limpiar archivos no transferidos; `0` = limpieza desactivada (los transferidos siempre se borran inmediatamente) |
 | `MEDIAFETCH_TUNNEL` | `0` | `1` = iniciar túnel Cloudflare |
 | `MEDIAFETCH_DOWNLOAD_DIR` | `downloads/` | Directorio de descargas |
 | `MEDIAFETCH_MODE` | auto | `server` o `local` |

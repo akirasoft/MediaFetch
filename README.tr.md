@@ -2,11 +2,11 @@
 
 > 🌐 **Language / Dil / Idioma:** [🇺🇸 English](README.md) · [🇹🇷 Türkçe](README.tr.md) · [🇪🇸 Español](README.es.md)
 
-> 🖥️ **Bu sürüm sunucu / VPS içindir** — Ubuntu, Docker veya Pterodactyl'a kur, arkadaşlarınla paylaş. Her kişiye ayrı erişim anahtarı ver; indirilen dosyalar doğrudan onların bilgisayarına gider, sunucuda hiçbir şey kalmaz.  
+> 🖥️ **Bu sürüm sunucu / VPS içindir** — Ubuntu, Docker veya Pterodactyl'a kur, arkadaşlarınla paylaş. Her kişiye ayrı erişim anahtarı ver; aktarılan dosyalar tarayıcıya ulaşır ulaşmaz sunucudan silinir.  
 > 💻 Kendi Windows bilgisayarında yerel çalıştırmak istiyorsan → **[mediafetch-local](https://github.com/akirasoft/mediafetch-local)**
 
 YouTube, TikTok, Instagram, SoundCloud ve 1000+ siteden müzik/video indirme aracı.  
-Kendi sunucuna (VPS/VDS) kurarsın, arkadaşlarına kişisel anahtar verirsin; indirilen dosyalar doğrudan onların bilgisayarına gider — sunucuda hiçbir şey kalmaz.
+Kendi sunucuna (VPS/VDS) kurarsın, arkadaşlarına kişisel anahtar verirsin; aktarılan dosyalar tarayıcıya ulaşır ulaşmaz sunucudan silinir. Aktarılmayan dosyalar `MEDIAFETCH_RETENTION_MIN` dakika sonra temizlenir (`0` = otomatik temizlik kapalı, dosyalar süresiz kalır).
 
 ---
 
@@ -88,8 +88,10 @@ SERVER_PORT=8422
 # Sunucunun dışarıdan erişilen adresi (subdomain varsa onu yaz)
 MEDIAFETCH_PUBLIC_URL=http://SUNUCU_IP_ADRESI:8422
 
-# Dosya saklama süresi (dakika) — 0 = saklamaz, anında siler
-MEDIAFETCH_RETENTION_MIN=0
+# Aktarılmayan dosyaların ne kadar süre tutulacağı (dakika)
+# 0 = otomatik temizlik kapalı (aktarılan dosyalar indirme anında her zaman silinir)
+# Önerilen: 1440 (24 saat) — hiç alınmayan dosyaları otomatik temizler
+MEDIAFETCH_RETENTION_MIN=1440
 ```
 
 ### 5. Başlat
@@ -214,7 +216,7 @@ Twitter/X videoları, SoundCloud, Vimeo ve yt-dlp'nin desteklediği 1000+ site.
 | `MEDIAFETCH_TOKEN` | — | **Zorunlu** — sahip şifresi |
 | `SERVER_PORT` | `8422` | Dinlenecek port |
 | `MEDIAFETCH_PUBLIC_URL` | — | Dışarıdan erişilen adres |
-| `MEDIAFETCH_RETENTION_MIN` | `0` | Dosya saklama süresi (dk), 0 = anında sil |
+| `MEDIAFETCH_RETENTION_MIN` | `1440` | Aktarılmayan dosyaların tutulma süresi (dk); `0` = otomatik temizlik kapalı (aktarılan dosyalar her zaman anında silinir) |
 | `MEDIAFETCH_TUNNEL` | `0` | `1` = Cloudflare tüneli başlat |
 | `MEDIAFETCH_DOWNLOAD_DIR` | `downloads/` | İndirme klasörü |
 | `MEDIAFETCH_MODE` | otomatik | `server` veya `local` |
