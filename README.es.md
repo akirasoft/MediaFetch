@@ -233,7 +233,7 @@ npm test
 
 ---
 
-## Instalación Local (Windows / macOS)
+## Instalación Local (Windows)
 
 ¿No quieres un servidor? Hay una versión local independiente:
 

@@ -233,7 +233,7 @@ npm test
 
 ---
 
-## Run Locally (Windows / macOS)
+## Run Locally (Windows)
 
 Don't want a server? There's a standalone local version:
 

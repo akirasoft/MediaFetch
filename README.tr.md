@@ -233,7 +233,7 @@ npm test
 
 ---
 
-## Yerel Kurulum (Windows / macOS)
+## Yerel Kurulum (Windows)
 
 Sunucu kurmak istemiyorsan, kendi bilgisayarında çalışan sürüm için:
 
