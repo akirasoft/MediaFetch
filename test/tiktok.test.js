@@ -97,6 +97,17 @@ test('invalid/empty height → sensible best selector, no NaN', () => {
   assert(!/NaN/.test(f), 'NaN leaked into selector: ' + f);
   assert(f.includes('best'), f);
 });
+test('prefers H.264/AVC first (black-screen guard against HEVC)', () => {
+  const f = tiktokVideoFormat('1080');
+  assert(f.startsWith('best[height<=1080][ext=mp4][vcodec^=avc]'),
+    'expected an AVC-first selector, got: ' + f);
+  // The very first alternative must constrain the codec to AVC.
+  assert(f.split('/')[0].includes('vcodec^=avc'), f);
+});
+test('AVC preference also applies when height is invalid', () => {
+  const f = tiktokVideoFormat('abc');
+  assert(f.split('/')[0].includes('vcodec^=avc'), 'no-height selector not AVC-first: ' + f);
+});
 
 console.log('\nMedia-source safety (isSafeTikTokMediaUrl) — SSRF guard');
 test('accepts a real tiktokcdn host over https', () => {

@@ -490,13 +490,20 @@ function isSafeTikTokMediaUrl(raw) {
 // (yt-dlp only filters formats, it does not scale up).
 function tiktokVideoFormat(height) {
   const h = parseInt(height, 10);
+  // AVC/H.264 is preferred everywhere: TikTok increasingly serves HEVC/H.265
+  // (bytevc1), which Windows and most browsers cannot decode and thus render as
+  // a BLACK SCREEN with working audio. Prefer H.264 sources first; only fall
+  // back to a codec-agnostic `best` when no H.264 format exists at that height.
   if (!Number.isFinite(h) || h <= 0) {
-    return 'best[ext=mp4]/bestvideo[vcodec^=avc]+bestaudio/bestvideo+bestaudio/best';
+    return 'best[ext=mp4][vcodec^=avc]/best[vcodec^=avc]/bestvideo[vcodec^=avc]+bestaudio/best[ext=mp4]/best';
   }
   return [
+    `best[height<=${h}][ext=mp4][vcodec^=avc]`,
+    `best[height<=${h}][vcodec^=avc]`,
+    `bestvideo[height<=${h}][vcodec^=avc]+bestaudio[ext=m4a]`,
+    `bestvideo[height<=${h}][vcodec^=avc]+bestaudio`,
     `best[height<=${h}][ext=mp4]`,
     `best[height<=${h}]`,
-    `bestvideo[height<=${h}][vcodec^=avc]+bestaudio`,
     `bestvideo[height<=${h}]+bestaudio`,
     'best[ext=mp4]',
     'best',
@@ -583,6 +590,15 @@ function startTikTokFallback(downloadId, url, platformArgs, ffmpegArgs, download
     ];
     startProc(downloadId, args, { url, title: safeName });
   });
+}
+
+// Controlled TikTok debug log — OFF by default. Never logs full signed CDN
+// URLs, cookies or tokens; only coarse status/codec info. Enable with
+// MEDIAFETCH_TIKTOK_DEBUG=1 during development.
+function ttLog(downloadId, ...parts) {
+  if (process.env.MEDIAFETCH_TIKTOK_DEBUG === '1') {
+    console.log(`[TikTok][${downloadId}]`, ...parts);
+  }
 }
 
 // TikTok watermark-free download.
@@ -750,13 +766,14 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
   const probeOut = await new Promise((resolve) => {
     execFile(ffprobeBin, [
       '-v', 'quiet', '-select_streams', 'v:0',
-      '-show_entries', 'stream=width,height',
+      '-show_entries', 'stream=width,height,codec_name',
       '-of', 'csv=p=0', tmpRaw
     ], (err, stdout) => {
       if (err || !stdout.trim()) { resolve(null); return; }
       const parts = stdout.trim().split(',');
       const w = parseInt(parts[0], 10), h = parseInt(parts[1], 10);
-      resolve((w && h) ? { w, h } : null);
+      const codec = (parts[2] || '').toLowerCase().trim();
+      resolve((w && h) ? { w, h, codec } : null);
     });
   });
 
@@ -788,28 +805,45 @@ async function runTikTokWatermarkFree(downloadId, url, embedUrl, platformArgs, f
 
   let produced = false;
 
+  // BLACK-SCREEN FIX: decide remux vs. transcode by the source video codec.
+  // Only H.264/AVC is universally playable (Windows, browsers, mobile). TikTok
+  // now frequently serves HEVC/H.265 (bytevc1) and occasionally VP9/AV1; copying
+  // those into an .mp4 produces a file that plays BLACK with working audio on
+  // Windows/Chrome because the HEVC/VP9/AV1 decoder is missing. So H.264 sources
+  // are remuxed losslessly (fast, no quality loss); everything else is
+  // transcoded to H.264 for compatibility.
+  const AVC_CODECS = ['h264', 'avc', 'avc1'];
+  const needsTranscode = !AVC_CODECS.includes(probeOut.codec);
+  ttLog(downloadId, 'raw', `${probeOut.w}x${probeOut.h}`, 'codec=' + (probeOut.codec || '?'),
+    needsTranscode ? '=> transcode to H.264 (black-screen guard)' : '=> lossless remux');
+
   // Optional legacy delogo pass — OFF by default (source is already clean).
+  // This path already re-encodes to libx264, so it is codec-safe on its own.
   if (process.env.MEDIAFETCH_TIKTOK_DELOGO === '1') {
     const tlW = Math.round(probeOut.w * 0.32), tlH = Math.round(probeOut.h * 0.09);
     const brX = Math.round(probeOut.w * 0.78), brY = Math.round(probeOut.h * 0.86);
     const brW = probeOut.w - brX - 2, brH = probeOut.h - brY - 2;
     const delogoFilter = `delogo=x=2:y=2:w=${tlW}:h=${tlH}:show=0,delogo=x=${brX}:y=${brY}:w=${brW}:h=${brH}:show=0`;
-    await runFfmpeg(['-i', tmpRaw, '-vf', delogoFilter, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'copy', '-y', finalOut]);
+    await runFfmpeg(['-i', tmpRaw, '-vf', delogoFilter, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', '-y', finalOut]);
     produced = fs.existsSync(finalOut) && fs.statSync(finalOut).size > 10000;
+    if (produced) ttLog(downloadId, 'delogo pass produced output');
   }
 
-  // Preferred path: lossless remux of the already-clean source.
-  if (!produced) {
+  // Preferred path: lossless remux — ONLY when the source is already H.264.
+  if (!produced && !needsTranscode) {
     cleanup(finalOut);
     await runFfmpeg(['-i', tmpRaw, '-c', 'copy', '-movflags', '+faststart', '-y', finalOut]);
     produced = fs.existsSync(finalOut) && fs.statSync(finalOut).size > 10000;
+    if (produced) ttLog(downloadId, 'lossless remux ok');
   }
 
-  // Last resort: re-encode into a standard MP4 if the container needs it.
+  // Compatibility transcode: HEVC/VP9/AV1 (or a failed remux) -> H.264 so the
+  // video is not black. Also the last-resort path for any container issue.
   if (!produced) {
     cleanup(finalOut);
-    await runFfmpeg(['-i', tmpRaw, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-y', finalOut]);
+    await runFfmpeg(['-i', tmpRaw, '-c:v', 'libx264', '-preset', 'fast', '-crf', '18', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-movflags', '+faststart', '-y', finalOut]);
     produced = fs.existsSync(finalOut) && fs.statSync(finalOut).size > 10000;
+    if (produced) ttLog(downloadId, 'transcode to H.264 ok');
   }
 
   cleanup(tmpRaw);
