@@ -146,7 +146,7 @@ let L = LANG.tr;
 
 /* Ayarlar panelindeki hazır adresler. Sunucu IP'si burada tek yerde durur. */
 const PRESET_LOCAL  = 'http://localhost:3434';
-const PRESET_REMOTE = 'http://SUNUCU_IP:8422';
+const PRESET_REMOTE = 'http://ornek.duckdns.org:8422';
 
 /* ── DOM ──────────────────────────────────────────────────── */
 const srvDot       = document.getElementById('srvDot');

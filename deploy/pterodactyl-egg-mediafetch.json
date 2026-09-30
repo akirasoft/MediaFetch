@@ -51,7 +51,7 @@
     },
     {
       "name": "Dış adres",
-      "description": "MEDIAFETCH_PUBLIC_URL — tarayıcıda kullanılacak adres, örn. http://SUNUCU_IP:8422",
+      "description": "MEDIAFETCH_PUBLIC_URL — tarayıcıda kullanılacak adres, örn. http://ornek.duckdns.org:8422",
       "env_variable": "MEDIAFETCH_PUBLIC_URL",
       "default_value": "",
       "user_viewable": true,

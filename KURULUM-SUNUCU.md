@@ -69,7 +69,7 @@ Panel → **Admin** → Nests → **Import Egg** →
 |---|---|
 | `MEDIAFETCH_TOKEN` | uzun rastgele bir anahtar (aşağıya bak) |
 | `MEDIAFETCH_MODE` | `server` |
-| `MEDIAFETCH_PUBLIC_URL` | `http://SUNUCU_IP:8422` |
+| `MEDIAFETCH_PUBLIC_URL` | `http://ornek.duckdns.org:8422` |
 | `MEDIAFETCH_RETENTION_MIN` | `1440` (dosyalar 24 saat sonra silinir) |
 | `GIT_REPO` | deponun varsa adresi, yoksa boş |
 
@@ -107,7 +107,7 @@ Auth: enabled (MEDIAFETCH_TOKEN)
 ```
 
 Tarayıcıdan kontrol:
-`http://SUNUCU_IP:8422/login?t=ANAHTARIN`
+`http://ornek.duckdns.org:8422/login?t=ANAHTARIN`
 
 ---
 
@@ -160,14 +160,14 @@ Sunucuyu kontrol ettim (27.09.2026):
 ```
 http://SUNUCU_IP/       -> Pterodactyl paneli (nginx/1.18.0, Laravel)
 http://SUNUCU_IP:8080/  -> Wings (panel daemon)
-http://SUNUCU_IP:8422/  -> boş
+http://ornek.duckdns.org:8422/  -> boş
 ```
 
 Yani **80 portunun kökü zaten panelin kendisi**. Oraya MediaFetch'i koymak
 paneli erişilemez yapar. Doğru adres:
 
 ```
-http://SUNUCU_IP:8422
+http://ornek.duckdns.org:8422
 ```
 
 Kesinlikle 80 portundan görünmesini istiyorsan iki seçeneğin var:
@@ -202,7 +202,7 @@ Kesinlikle 80 portundan görünmesini istiyorsan iki seçeneğin var:
 2. **Paketlenmemiş öğe yükle** → `extension/` klasörünü seç.
 3. Araç çubuğundaki MediaFetch simgesine tıkla → sağ üstteki **⚙**.
 4. Ayarlar:
-   - **Sunucu adresi:** `http://SUNUCU_IP:8422`
+   - **Sunucu adresi:** `http://ornek.duckdns.org:8422`
      (hazır **Sunucu (8422)** düğmesi bunu doldurur)
    - **Erişim anahtarı:** `MEDIAFETCH_TOKEN` değerin
    - **Bitince dosyayı bilgisayarıma indir:** işaretli kalsın
@@ -241,7 +241,7 @@ Local sunucuya dönmek istersen: ⚙ → **Local (3434)** → anahtarı boşalt 
 | `Not allowed to bind port 80` | 1024 altı port root ister. Yüksek port + nginx kullan. |
 | `yt-dlp NOT FOUND` | `sh scripts/install-linux.sh` çalıştır. |
 | `ffmpeg not found` | MP3 ve birleştirme çalışmaz. `sudo apt-get install -y ffmpeg` ya da `MEDIAFETCH_FORCE_FFMPEG=1 sh scripts/install-linux.sh`. |
-| Eklentide nokta kırmızı, "Sunucuya ulaşılamıyor" | Adres/port yanlış, güvenlik duvarı kapalı ya da uygulama durmuş. `curl http://SUNUCU_IP:8422/api/health` ile dene. |
+| Eklentide nokta kırmızı, "Sunucuya ulaşılamıyor" | Adres/port yanlış, güvenlik duvarı kapalı ya da uygulama durmuş. `curl http://ornek.duckdns.org:8422/api/health` ile dene. |
 | Eklentide "Erişim anahtarı hatalı" | ⚙'deki anahtar ile `MEDIAFETCH_TOKEN` birebir aynı olmalı. |
 | Web arayüzü açılıyor ama ilerleme çubuğu donuk | WebSocket engelleniyor. nginx kullanıyorsan `Upgrade`/`Connection` başlıkları ve `proxy_read_timeout` ayarlı mı bak. |
 | YouTube'da "format bulunamadı" | Konteynerde Node var, sorun değil; yine de olursa panelden yt-dlp'yi güncelle (Ayarlar → Güncelle). |

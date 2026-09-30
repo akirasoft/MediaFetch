@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "MediaFetch",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Download music & video from YouTube, TikTok, Instagram and 1000+ sites — via a local or a self-hosted MediaFetch server",
   "action": {
     "default_popup": "popup.html",
@@ -22,7 +22,10 @@
     "http://localhost:8422/*",
     "http://127.0.0.1:8422/*",
     "http://SUNUCU_IP/*",
-    "http://SUNUCU_IP:8422/*"
+    "http://SUNUCU_IP:8422/*",
+    "http://ornek.duckdns.org:8422/*",
+    "https://ornek.duckdns.org:8422/*",
+    "https://ornek.duckdns.org:8443/*"
   ],
   "optional_host_permissions": [
     "http://*/*",
