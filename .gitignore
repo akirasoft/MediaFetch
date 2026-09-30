@@ -54,3 +54,8 @@ keys.json.tmp
 .tunnel-url
 .tunnel.log
 .env.server
+
+# Yerel yamalar ve yedekler (sunucu adresleri iceriyor, commitlenmemeli)
+*.patch
+_eski-arayuz-yedek/
+SUNUCU-BILGILERI.txt
