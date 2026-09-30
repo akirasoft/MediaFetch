@@ -1,93 +1,103 @@
 {
-  "_comment": "MediaFetch — Pterodactyl egg. Panel > Nests > Import Egg ile yüklenir.",
-  "meta": {
-    "version": "PTDL_v2",
-    "update_url": null
-  },
-  "exported_at": "2026-09-27T00:00:00+00:00",
-  "name": "MediaFetch",
-  "author": "toguzhan008@gmail.com",
-  "description": "yt-dlp tabanlı müzik/video indirici — web arayüzü + Chrome eklentisi sunucusu.",
-  "features": null,
-  "docker_images": {
-    "Node.js 22": "ghcr.io/parkervcp/yolks:nodejs_22",
-    "Node.js 20": "ghcr.io/parkervcp/yolks:nodejs_20"
-  },
-  "file_denylist": [],
-  "startup": "sh scripts/start.sh",
-  "config": {
-    "files": "{}",
-    "startup": "{\r\n    \"done\": \"Listening on\"\r\n}",
-    "logs": "{}",
-    "stop": "^C"
-  },
-  "scripts": {
-    "installation": {
-      "script": "#!/bin/bash\n# MediaFetch kurulum scripti (Pterodactyl install container)\nset -e\n\napt-get update -y\napt-get install -y curl ca-certificates tar xz-utils git jq\n\nmkdir -p /mnt/server\ncd /mnt/server\n\n# Depo adresi verildiyse kodu oradan çek (boş bırakılırsa dosyaları\n# panelin dosya yöneticisinden kendin yüklersin).\nif [ -n \"${GIT_REPO}\" ]; then\n  if [ -d .git ]; then\n    git fetch --all && git reset --hard \"origin/${GIT_BRANCH:-main}\"\n  else\n    git clone --depth 1 -b \"${GIT_BRANCH:-main}\" \"${GIT_REPO}\" /tmp/mf\n    cp -a /tmp/mf/. /mnt/server/\n    rm -rf /tmp/mf\n  fi\nfi\n\nmkdir -p bin downloads\n\n# Mimariye göre yt-dlp\nARCH=$(uname -m)\ncase \"$ARCH\" in\n  x86_64|amd64)  YTDLP=yt-dlp_linux;         FF=linux64 ;;\n  aarch64|arm64) YTDLP=yt-dlp_linux_aarch64; FF=linuxarm64 ;;\n  *)             YTDLP=yt-dlp_linux;         FF=linux64 ;;\nesac\n\necho \"==> yt-dlp ($YTDLP)\"\ncurl -fL -o bin/yt-dlp \"https://github.com/yt-dlp/yt-dlp/releases/latest/download/${YTDLP}\"\ncurl -fL -o /tmp/SUMS \"https://github.com/yt-dlp/yt-dlp/releases/latest/download/SHA2-256SUMS\"\nEXPECTED=$(grep \" \\*\\?${YTDLP}$\" /tmp/SUMS | awk '{print $1}' | head -n1)\nACTUAL=$(sha256sum bin/yt-dlp | awk '{print $1}')\nif [ \"$EXPECTED\" != \"$ACTUAL\" ]; then\n  echo \"HATA: yt-dlp SHA256 uyuşmuyor ($EXPECTED != $ACTUAL)\"; exit 1\nfi\nchmod 755 bin/yt-dlp\n\n# ffmpeg: yolks imajlarında genelde /usr/bin'de zaten var. Yoksa GitHub'daki\n# statik derlemeyi ./bin'e koy — sunucu önce orayı arar.\nif command -v ffmpeg >/dev/null 2>&1; then\n  echo \"==> ffmpeg imajda mevcut: $(command -v ffmpeg)\"\nelse\n  echo \"==> ffmpeg (statik) indiriliyor\"\n  curl -fL -o /tmp/ffmpeg.tar.xz \\\n    \"https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-${FF}-gpl.tar.xz\" || true\n  if [ -f /tmp/ffmpeg.tar.xz ]; then\n    mkdir -p /tmp/ff && tar -xJf /tmp/ffmpeg.tar.xz -C /tmp/ff\n    find /tmp/ff -type f -name ffmpeg  -exec cp {} bin/ffmpeg  \\; || true\n    find /tmp/ff -type f -name ffprobe -exec cp {} bin/ffprobe \\; || true\n    chmod 755 bin/ffmpeg bin/ffprobe 2>/dev/null || true\n  fi\n  [ -x bin/ffmpeg ] || echo \"UYARI: ffmpeg kurulamadı — MP3 ve birleştirme çalışmaz.\"\nfi\n\nif [ -f package.json ]; then\n  echo \"==> npm install\"\n  npm install --omit=dev\nfi\n\nchmod +x scripts/*.sh 2>/dev/null || true\n\necho \"Kurulum tamamlandı.\"\n",
-      "container": "ghcr.io/parkervcp/installers:debian",
-      "entrypoint": "bash"
-    }
-  },
-  "variables": [
-    {
-      "name": "Erişim anahtarı",
-      "description": "MEDIAFETCH_TOKEN — web arayüzü ve eklenti bu anahtarla girer. Açık IP'de MUTLAKA doldur. Üret: openssl rand -hex 24",
-      "env_variable": "MEDIAFETCH_TOKEN",
-      "default_value": "",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "nullable|string|max:128",
-      "field_type": "text"
+    "_comment": "MediaFetch — Pterodactyl egg. Panel > Nests > Import Egg ile yüklenir.",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
     },
-    {
-      "name": "Çalışma modu",
-      "description": "server = sunucu modu (önerilen). local sadece masaüstü içindir.",
-      "env_variable": "MEDIAFETCH_MODE",
-      "default_value": "server",
-      "user_viewable": true,
-      "user_editable": false,
-      "rules": "required|string|in:server,local",
-      "field_type": "text"
+    "exported_at": "2026-09-27T00:00:00+00:00",
+    "name": "MediaFetch",
+    "author": "toguzhan008@gmail.com",
+    "description": "yt-dlp tabanlı müzik/video indirici — web arayüzü + Chrome eklentisi sunucusu.",
+    "features": null,
+    "docker_images": {
+        "Node.js 22": "ghcr.io/parkervcp/yolks:nodejs_22",
+        "Node.js 20": "ghcr.io/parkervcp/yolks:nodejs_20"
     },
-    {
-      "name": "Dış adres",
-      "description": "MEDIAFETCH_PUBLIC_URL — tarayıcıda kullanılacak adres, örn. http://ornek.duckdns.org:8422",
-      "env_variable": "MEDIAFETCH_PUBLIC_URL",
-      "default_value": "",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "nullable|string|max:255",
-      "field_type": "text"
+    "file_denylist": [],
+    "startup": "sh scripts/start.sh",
+    "config": {
+        "files": "{}",
+        "startup": "{\r\n    \"done\": \"Listening on\"\r\n}",
+        "logs": "{}",
+        "stop": "^C"
     },
-    {
-      "name": "Dosya saklama (dakika)",
-      "description": "MEDIAFETCH_RETENTION_MIN — indirilen dosyalar kaç dakika sonra silinsin. 0 = hiç silme.",
-      "env_variable": "MEDIAFETCH_RETENTION_MIN",
-      "default_value": "1440",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "required|integer|min:0|max:100000",
-      "field_type": "text"
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\n# MediaFetch kurulum scripti (Pterodactyl install container)\nset -e\n\napt-get update -y\napt-get install -y curl ca-certificates tar xz-utils git jq\n\nmkdir -p /mnt/server\ncd /mnt/server\n\n# Depo adresi verildiyse kodu oradan çek (boş bırakılırsa dosyaları\n# panelin dosya yöneticisinden kendin yüklersin).\nif [ -n \"${GIT_REPO}\" ]; then\n  if [ -d .git ]; then\n    git fetch --all && git reset --hard \"origin/${GIT_BRANCH:-main}\"\n  else\n    git clone --depth 1 -b \"${GIT_BRANCH:-main}\" \"${GIT_REPO}\" /tmp/mf\n    cp -a /tmp/mf/. /mnt/server/\n    rm -rf /tmp/mf\n  fi\nfi\n\nmkdir -p bin downloads\n\n# Mimariye göre yt-dlp\nARCH=$(uname -m)\ncase \"$ARCH\" in\n  x86_64|amd64)  YTDLP=yt-dlp_linux;         FF=linux64 ;;\n  aarch64|arm64) YTDLP=yt-dlp_linux_aarch64; FF=linuxarm64 ;;\n  *)             YTDLP=yt-dlp_linux;         FF=linux64 ;;\nesac\n\necho \"==> yt-dlp ($YTDLP)\"\ncurl -fL -o bin/yt-dlp \"https://github.com/yt-dlp/yt-dlp/releases/latest/download/${YTDLP}\"\ncurl -fL -o /tmp/SUMS \"https://github.com/yt-dlp/yt-dlp/releases/latest/download/SHA2-256SUMS\"\nEXPECTED=$(grep \" \\*\\?${YTDLP}$\" /tmp/SUMS | awk '{print $1}' | head -n1)\nACTUAL=$(sha256sum bin/yt-dlp | awk '{print $1}')\nif [ \"$EXPECTED\" != \"$ACTUAL\" ]; then\n  echo \"HATA: yt-dlp SHA256 uyuşmuyor ($EXPECTED != $ACTUAL)\"; exit 1\nfi\nchmod 755 bin/yt-dlp\n\n# ffmpeg — normalde indirilmez.\n#\n# Bu script KURULUM konteynerinde (installers:debian) çalışır, uygulama ise\n# ÇALIŞTIRMA imajında (yolks:nodejs_*). Yolks imajlarında /usr/bin/ffmpeg\n# zaten vardır ve server.js findFfmpeg() onu kendisi bulur:\n#   ./bin -> /usr/bin -> /usr/local/bin -> PATH\n# Kurulum konteynerinde ffmpeg olmadığı için burada \"command -v ffmpeg\"\n# kontrolü hiçbir zaman doğru sonuç vermez; her seferinde ~150 MB'lık statik\n# derlemeyi indirmeye çalışır ve /tmp küçük bir tmpfs olduğu için (wings\n# varsayılanı 100 MB) \"No space left on device\" ile kurulumu düşürür.\n#\n# Bu yüzden indirme opsiyonel: ffmpeg içermeyen özel bir imaj kullanıyorsan\n# FFMPEG_DOWNLOAD=1 yap.\nif [ \"${FFMPEG_DOWNLOAD}\" = \"1\" ]; then\n  echo \"==> ffmpeg (statik) indiriliyor\"\n  # /tmp yerine sunucunun kendi diskine indir (orada disk kotası geçerli),\n  # ve arşivden sadece iki ikili dosyayı çıkar — doc/man ~200 MB yer kaplıyor.\n  FFTMP=/mnt/server/.ffmpeg-tmp\n  rm -rf \"$FFTMP\"; mkdir -p \"$FFTMP\"\n  if curl -fL -o \"$FFTMP/ffmpeg.tar.xz\" \\\n      \"https://github.com/BtbN/FFmpeg-Builds/releases/latest/download/ffmpeg-master-latest-${FF}-gpl.tar.xz\"; then\n    tar -xJf \"$FFTMP/ffmpeg.tar.xz\" -C \"$FFTMP\" --wildcards '*/bin/ffmpeg' '*/bin/ffprobe' || true\n    find \"$FFTMP\" -type f -name ffmpeg  -exec cp {} bin/ffmpeg  \\; || true\n    find \"$FFTMP\" -type f -name ffprobe -exec cp {} bin/ffprobe \\; || true\n    chmod 755 bin/ffmpeg bin/ffprobe 2>/dev/null || true\n    if [ -x bin/ffmpeg ]; then\n      echo \"==> ffmpeg ./bin içine kuruldu\"\n    else\n      echo \"UYARI: ffmpeg çıkarılamadı — imajdaki sürüm kullanılacak.\"\n    fi\n  else\n    echo \"UYARI: ffmpeg indirilemedi — imajdaki sürüm kullanılacak.\"\n  fi\n  rm -rf \"$FFTMP\"\nelse\n  echo \"==> ffmpeg indirmesi atlandı (çalıştırma imajındaki sürüm kullanılacak)\"\nfi\n\nif [ -f package.json ]; then\n  echo \"==> npm install\"\n  npm install --omit=dev\nfi\n\nchmod +x scripts/*.sh 2>/dev/null || true\n\necho \"Kurulum tamamlandı.\"\n",
+            "container": "ghcr.io/parkervcp/installers:debian",
+            "entrypoint": "bash"
+        }
     },
-    {
-      "name": "Git deposu (opsiyonel)",
-      "description": "GIT_REPO — kurulumda kodu buradan çeker. Boş bırakırsan dosyaları elle yüklersin.",
-      "env_variable": "GIT_REPO",
-      "default_value": "",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "nullable|string|max:255",
-      "field_type": "text"
-    },
-    {
-      "name": "Git dalı",
-      "description": "GIT_BRANCH — varsayılan main.",
-      "env_variable": "GIT_BRANCH",
-      "default_value": "main",
-      "user_viewable": true,
-      "user_editable": true,
-      "rules": "required|string|max:64",
-      "field_type": "text"
-    }
-  ]
+    "variables": [
+        {
+            "name": "Erişim anahtarı",
+            "description": "MEDIAFETCH_TOKEN — web arayüzü ve eklenti bu anahtarla girer. Açık IP'de MUTLAKA doldur. Üret: openssl rand -hex 24",
+            "env_variable": "MEDIAFETCH_TOKEN",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string|max:128",
+            "field_type": "text"
+        },
+        {
+            "name": "Çalışma modu",
+            "description": "server = sunucu modu (önerilen). local sadece masaüstü içindir.",
+            "env_variable": "MEDIAFETCH_MODE",
+            "default_value": "server",
+            "user_viewable": true,
+            "user_editable": false,
+            "rules": "required|string|in:server,local",
+            "field_type": "text"
+        },
+        {
+            "name": "Dış adres",
+            "description": "MEDIAFETCH_PUBLIC_URL — tarayıcıda kullanılacak adres, örn. http://ornek.duckdns.org:8422",
+            "env_variable": "MEDIAFETCH_PUBLIC_URL",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string|max:255",
+            "field_type": "text"
+        },
+        {
+            "name": "Dosya saklama (dakika)",
+            "description": "MEDIAFETCH_RETENTION_MIN — indirilen dosyalar kaç dakika sonra silinsin. 0 = hiç silme.",
+            "env_variable": "MEDIAFETCH_RETENTION_MIN",
+            "default_value": "1440",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|min:0|max:100000",
+            "field_type": "text"
+        },
+        {
+            "name": "Git deposu (opsiyonel)",
+            "description": "GIT_REPO — kurulumda kodu buradan çeker. Boş bırakırsan dosyaları elle yüklersin.",
+            "env_variable": "GIT_REPO",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|string|max:255",
+            "field_type": "text"
+        },
+        {
+            "name": "Git dalı",
+            "description": "GIT_BRANCH — varsayılan main.",
+            "env_variable": "GIT_BRANCH",
+            "default_value": "main",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|max:64",
+            "field_type": "text"
+        },
+        {
+            "name": "ffmpeg statik derlemesini indir",
+            "description": "FFMPEG_DOWNLOAD — normalde 0 kalmalı. Yolks imajlarında ffmpeg zaten var ve uygulama onu bulur. Sadece ffmpeg içermeyen özel bir Docker imajı kullanıyorsan 1 yap; o zaman kurulum ~150 MB indirir.",
+            "env_variable": "FFMPEG_DOWNLOAD",
+            "default_value": "0",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|in:0,1",
+            "field_type": "text"
+        }
+    ]
 }
